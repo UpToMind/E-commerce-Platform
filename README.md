@@ -31,10 +31,10 @@
 |---------------------|------------------|------------------|----------------------------------------------------------------------|
 | `UserCreated`       | `UserService`    | `OrderService`   | 사용자가 등록될 때 발생. `OrderService`가 사용자 정보를 참조 가능.  |
 | `OrderCreated`      | `OrderService`   | `PaymentService` | 주문이 생성되면 발생. `PaymentService`가 결제를 시작.               |
-| `OrderCancelled`    | `OrderService`   | `ProductService` | 주문이 취소되면 발생. `ProductService`가 재고를 증가(`IncreaseStock`). |
+| `OrderCancelled`    | `OrderService`   | `PaymentService` | 주문이 취소되면 발생. `PaymentService`가 결제를 취소(`CancelPayment`). |
 | `OrderPaid`         | `OrderService`   | `ProductService` | 주문 결제가 완료되면 발생. `ProductService`가 재고를 감소(`DecreaseStock`). |
 | `PaymentCompleted`  | `PaymentService` | `OrderService`   | 결제가 성공적으로 완료되면 발생. `OrderService`가 주문 상태를 업데이트(`ChangeOrderStatus`). |
-| `PaymentCancelled`  | `PaymentService` | `OrderService`   | 결제가 취소되면 발생. `OrderService`가 주문 상태를 업데이트(`ChangeOrderStatus`). |
+| `PaymentCancelled`  | `PaymentService` | `OrderService`, `ProductService`   | 결제가 취소되면 발생. `OrderService`가 주문 상태를 업데이트(`ChangeOrderStatus`). `ProductService`가 재고 수량을 증가(`IncreaseStock`)|
 | `PaymentFailed`     | `PaymentService` | `OrderService`   | 결제가 실패하면 발생. `OrderService`가 주문 상태를 업데이트(`ChangeOrderStatus`). |
 
 ## 커맨드, 액터, 정책
