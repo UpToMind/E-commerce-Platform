@@ -5,14 +5,16 @@ import com.ecommerce.system.domain.valueobject.Money;
 import com.ecommerce.system.domain.valueobject.OrderId;
 import com.ecommerce.system.domain.valueobject.OrderStatus;
 import com.ecommerce.system.domain.valueobject.UserId;
+import com.ecommerce.system.order.service.domain.valueobject.OrderItemId;
 import com.ecommerce.system.order.service.domain.valueobject.TrackingId;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Order extends AggregateRoot<OrderId> {
     private final UserId userId;
     private final Money price;
-    private final List<OrderItem> Items;
+    private final List<OrderItem> items;
 
     private TrackingId trackingId;
     private OrderStatus orderStatus;
@@ -22,10 +24,24 @@ public class Order extends AggregateRoot<OrderId> {
         super.setId(builder.orderId);
         userId = builder.userId;
         price = builder.price;
-        Items = builder.Items;
+        items = builder.Items;
         trackingId = builder.trackingId;
         orderStatus = builder.orderStatus;
         failuerMessages = builder.failuerMessages;
+    }
+
+    public void initializeOrder() {
+        setId(new OrderId(UUID.randomUUID()));
+        trackingId = new TrackingId(UUID.randomUUID());
+        orderStatus = OrderStatus.PENDING;
+        initializeOrderItems();
+    }
+
+    private void initializeOrderItems() {
+        long itemId = 1;
+        for (OrderItem orderItem: items) {
+            orderItem.initializeOrderItem(super.getId(), new OrderItemId(itemId++));
+        }
     }
 
 
@@ -38,7 +54,7 @@ public class Order extends AggregateRoot<OrderId> {
     }
 
     public List<OrderItem> getItems() {
-        return Items;
+        return items;
     }
 
     public TrackingId getTrackingId() {
