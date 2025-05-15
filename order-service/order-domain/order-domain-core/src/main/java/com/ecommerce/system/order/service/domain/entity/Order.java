@@ -19,7 +19,7 @@ public class Order extends AggregateRoot<OrderId> {
 
     private TrackingId trackingId;
     private OrderStatus orderStatus;
-    private List<String> failuerMessages;
+    private List<String> failureMessages;
 
     private Order(Builder builder) {
         super.setId(builder.orderId);
@@ -28,7 +28,7 @@ public class Order extends AggregateRoot<OrderId> {
         items = builder.Items;
         trackingId = builder.trackingId;
         orderStatus = builder.orderStatus;
-        failuerMessages = builder.failuerMessages;
+        failureMessages = builder.failuerMessages;
     }
 
     public void initializeOrder() {
@@ -42,6 +42,39 @@ public class Order extends AggregateRoot<OrderId> {
         validateInitialOrder();
         validateTotalPrice();
         validateItemsPrice();
+    }
+
+    public void pay() {
+        if (orderStatus != OrderStatus.PENDING) {
+            throw new OrderDomainException("Order is not in correct state for pay operation!");
+        }
+        orderStatus = OrderStatus.PAID;
+    }
+
+    // 네트위크 에러 고려
+    public void initCancel(List<String> failureMessages) {
+        if (orderStatus != OrderStatus.PAID) {
+            throw new OrderDomainException("Order is not in correct state for initCancel operation!");
+        }
+        orderStatus = OrderStatus.CANCELLING;
+        updateFailureMessages(failureMessages);
+    }
+
+    public void cancel(List<String> failureMessages) {
+        if (!(orderStatus == OrderStatus.CANCELLING || orderStatus == OrderStatus.PENDING)) {
+            throw new OrderDomainException("Order is not in correct state for cancel operation!");
+        }
+        orderStatus = OrderStatus.CANCELLED;
+        updateFailureMessages(failureMessages);
+    }
+
+    private void updateFailureMessages(List<String> failureMessages) {
+        if (this.failureMessages != null && failureMessages != null) {
+            this.failureMessages.addAll(failureMessages.stream().filter(message -> !message.isEmpty()).toList());
+        }
+        if (this.failureMessages == null) {
+            this.failureMessages = failureMessages;
+        }
     }
 
     private void validateItemsPrice() {
@@ -104,7 +137,7 @@ public class Order extends AggregateRoot<OrderId> {
     }
 
     public List<String> getFailuerMessages() {
-        return failuerMessages;
+        return failureMessages;
     }
 
     public static final class Builder {
