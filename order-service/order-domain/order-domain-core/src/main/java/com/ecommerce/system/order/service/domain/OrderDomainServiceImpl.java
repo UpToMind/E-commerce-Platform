@@ -54,6 +54,5 @@ public class OrderDomainServiceImpl implements OrderDomainService{
     public void cancelOrder(Order order, List<String> failureMessages) {
         order.cancel(failureMessages);
         log.info("Order with id: {} is cancelled", order.getId().getValue());
-        return new OrderCancelledEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
     }
 }
