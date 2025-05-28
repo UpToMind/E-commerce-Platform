@@ -1,5 +1,6 @@
 package com.ecommerce.system.order.service.domain.dto.message;
 
+import com.ecommerce.system.domain.valueobject.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
