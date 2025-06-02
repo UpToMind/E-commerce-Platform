@@ -13,6 +13,10 @@ public class Seller extends AggregateRoot<SellerId> {
         products = builder.products;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public List<Product> getProducts() {
         return products;
     }

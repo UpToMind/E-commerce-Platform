@@ -1,10 +1,7 @@
 package com.ecommerce.system.order.service.domain.entity;
 
 import com.ecommerce.system.domain.entity.AggregateRoot;
-import com.ecommerce.system.domain.valueobject.Money;
-import com.ecommerce.system.domain.valueobject.OrderId;
-import com.ecommerce.system.domain.valueobject.OrderStatus;
-import com.ecommerce.system.domain.valueobject.UserId;
+import com.ecommerce.system.domain.valueobject.*;
 import com.ecommerce.system.order.service.domain.exception.OrderDomainException;
 import com.ecommerce.system.order.service.domain.valueobject.OrderItemId;
 import com.ecommerce.system.order.service.domain.valueobject.TrackingId;
@@ -14,6 +11,7 @@ import java.util.UUID;
 
 public class Order extends AggregateRoot<OrderId> {
     private final UserId userId;
+    private final SellerId sellerId;
     private final Money price;
     private final List<OrderItem> items;
 
@@ -24,8 +22,9 @@ public class Order extends AggregateRoot<OrderId> {
     private Order(Builder builder) {
         super.setId(builder.orderId);
         userId = builder.userId;
+        sellerId = builder.sellerId;
         price = builder.price;
-        items = builder.Items;
+        items = builder.items;
         trackingId = builder.trackingId;
         orderStatus = builder.orderStatus;
         failureMessages = builder.failureMessages;
@@ -49,6 +48,13 @@ public class Order extends AggregateRoot<OrderId> {
             throw new OrderDomainException("Order is not in correct state for pay operation!");
         }
         orderStatus = OrderStatus.PAID;
+    }
+
+    public void approve() {
+        if(orderStatus != OrderStatus.PAID) {
+            throw new OrderDomainException("Order is not in correct state for approve operation!");
+        }
+        orderStatus = OrderStatus.APPROVED;
     }
 
     // 네트위크 에러 고려
@@ -115,9 +121,16 @@ public class Order extends AggregateRoot<OrderId> {
         }
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public UserId getUserId() {
         return userId;
+    }
+
+    public SellerId getSellerId() {
+        return sellerId;
     }
 
     public Money getPrice() {
@@ -143,17 +156,14 @@ public class Order extends AggregateRoot<OrderId> {
     public static final class Builder {
         private OrderId orderId;
         private UserId userId;
+        private SellerId sellerId;
         private Money price;
-        private List<OrderItem> Items;
+        private List<OrderItem> items;
         private TrackingId trackingId;
         private OrderStatus orderStatus;
         private List<String> failureMessages;
 
         private Builder() {
-        }
-
-        public static Builder newBuilder() {
-            return new Builder();
         }
 
         public Builder orderId(OrderId val) {
@@ -166,13 +176,18 @@ public class Order extends AggregateRoot<OrderId> {
             return this;
         }
 
+        public Builder sellerId(SellerId val) {
+            sellerId = val;
+            return this;
+        }
+
         public Builder price(Money val) {
             price = val;
             return this;
         }
 
-        public Builder Items(List<OrderItem> val) {
-            Items = val;
+        public Builder items(List<OrderItem> val) {
+            items = val;
             return this;
         }
 
