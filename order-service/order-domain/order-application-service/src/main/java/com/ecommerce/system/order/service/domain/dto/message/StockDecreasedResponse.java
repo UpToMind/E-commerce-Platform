@@ -7,9 +7,10 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class UserModel {
-    private String id;
-    private String username;
-    private String firstName;
-    private String lastName;
+public class StockDecreasedResponse {
+    private String orderId;
+    private String productId;
+    private int quantity;
+    private String status;
+    private String message;
 }
