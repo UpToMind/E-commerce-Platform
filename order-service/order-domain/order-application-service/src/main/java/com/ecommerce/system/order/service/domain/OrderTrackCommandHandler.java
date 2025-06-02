@@ -1,0 +1,10 @@
+package com.ecommerce.system.order.service.domain;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+public class OrderTrackCommandHandler {
+
+}
