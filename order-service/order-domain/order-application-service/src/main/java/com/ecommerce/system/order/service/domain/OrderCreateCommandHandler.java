@@ -1,10 +1,84 @@
 package com.ecommerce.system.order.service.domain;
 
+import com.ecommerce.system.order.service.domain.dto.create.CreateOrderCommand;
+import com.ecommerce.system.order.service.domain.entity.Order;
+import com.ecommerce.system.order.service.domain.entity.Seller;
+import com.ecommerce.system.order.service.domain.entity.User;
+import com.ecommerce.system.order.service.domain.event.OrderCreatedEvent;
+import com.ecommerce.system.order.service.domain.exception.OrderDomainException;
+import com.ecommerce.system.order.service.domain.mapper.OrderDataMapper;
+import com.ecommerce.system.order.service.domain.ports.output.repository.OrderRespository;
+import com.ecommerce.system.order.service.domain.ports.output.repository.SellerRepository;
+import com.ecommerce.system.order.service.domain.ports.output.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Component
 public class OrderCreateCommandHandler {
+    private final OrderDomainService orderDomainService;
 
+    private final OrderRespository orderRepository;
+
+    private final UserRepository userRepository;
+
+    private final SellerRepository sellerRepository;
+
+    private final OrderDataMapper orderDataMapper;
+
+    public OrderCreateCommandHandler(OrderDomainService orderDomainService,
+                                     OrderRespository orderRespository,
+                                     UserRepository userRepository,
+                                     SellerRepository sellerRepository,
+                                     OrderDataMapper orderDataMapper) {
+        this.orderDomainService = orderDomainService;
+        this.orderRepository = orderRespository;
+        this.userRepository = userRepository;
+        this.sellerRepository = sellerRepository;
+        this.orderDataMapper = orderDataMapper;
+    }
+
+    @Transactional
+    public OrderCreatedEvent persistOrder(CreateOrderCommand createOrderCommand) {
+        checkUser(createOrderCommand.getUserId());
+        Seller seller = checkSeller(createOrderCommand);
+        Order order = orderDataMapper.createOrderCommandToOrder(createOrderCommand);
+        OrderCreatedEvent orderCreatedEvent = orderDomainService.validateAndInitiateOrder(order, seller);
+        saveOrder(order);
+        log.info("Order is created with id: {}", orderCreatedEvent.getOrder().getId().getValue());
+        return orderCreatedEvent;
+    }
+
+    private Seller checkSeller(CreateOrderCommand createOrderCommand) {
+        Seller seller = orderDataMapper.createOrderCommandToSeller(createOrderCommand);
+        Optional<Seller> optionalSeller = sellerRepository.findSellerInformation(seller);
+        if (optionalSeller.isEmpty()) {
+            log.warn("Could not find seller with seller id: {}", createOrderCommand.getSellerId());
+            throw new OrderDomainException("Could not find seller with seller id: " +
+                    createOrderCommand.getSellerId());
+        }
+        return optionalSeller.get();
+    }
+
+    private void checkUser(UUID userId) {
+        Optional<User> user = userRepository.findUser(userId);
+        if (user.isEmpty()) {
+            log.warn("Could not find user with user id: {}", userId);
+            throw new OrderDomainException("Could not find user with user id: " + user);
+        }
+    }
+
+    private Order saveOrder(Order order) {
+        Order orderResult = orderRepository.save(order);
+        if (orderResult == null) {
+            log.error("Could not save order!");
+            throw new OrderDomainException("Could not save order!");
+        }
+        log.info("Order is saved with id: {}", orderResult.getId().getValue());
+        return orderResult;
+    }
 }
