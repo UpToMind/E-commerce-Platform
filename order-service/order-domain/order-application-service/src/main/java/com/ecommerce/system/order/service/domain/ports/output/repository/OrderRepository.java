@@ -6,11 +6,9 @@ import com.ecommerce.system.order.service.domain.valueobject.TrackingId;
 
 import java.util.Optional;
 
-public interface OrderRespository {
+public interface OrderRepository {
 
     Order save(Order order);
-
-    Optional<Order> findById(OrderId orderId);
 
     Optional<Order> findByTrackingId(TrackingId trackingId);
 }

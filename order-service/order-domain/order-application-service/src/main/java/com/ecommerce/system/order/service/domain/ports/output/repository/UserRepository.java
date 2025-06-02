@@ -8,5 +8,4 @@ import java.util.UUID;
 public interface UserRepository {
     Optional<User> findUser(UUID userId);
 
-    User save(User user);
 }
