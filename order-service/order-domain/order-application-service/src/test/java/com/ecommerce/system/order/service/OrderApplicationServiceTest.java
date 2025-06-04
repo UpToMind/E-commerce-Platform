@@ -8,6 +8,7 @@ import com.ecommerce.system.order.service.domain.entity.Order;
 import com.ecommerce.system.order.service.domain.entity.Product;
 import com.ecommerce.system.order.service.domain.entity.Seller;
 import com.ecommerce.system.order.service.domain.entity.User;
+import com.ecommerce.system.order.service.domain.exception.OrderDomainException;
 import com.ecommerce.system.order.service.domain.mapper.OrderDataMapper;
 import com.ecommerce.system.order.service.domain.ports.input.service.OrderApplicationService;
 import com.ecommerce.system.order.service.domain.ports.output.repository.OrderRepository;
@@ -24,8 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -138,4 +138,13 @@ public class OrderApplicationServiceTest {
         assertEquals("Order Created Successfully", createOrderResponse.getMessage());
         assertNotNull(createOrderResponse.getOrderTrackingId());
     }
+
+    @Test
+    public void testCreateOrderWithWrongTotalPrice() {
+        OrderDomainException orderDomainException = assertThrows(OrderDomainException.class,
+                () -> orderApplicationService.createOrder(createOrderCommandWrongPrice));
+        assertEquals("Total price: 250.00 is not equal to Order items total: 200.00!", orderDomainException.getMessage());
+    }
+
+
 }
