@@ -1,6 +1,7 @@
 package com.ecommerce.system.order.service.domain;
 
 import com.ecommerce.system.order.service.domain.dto.message.SellerApprovalResponse;
+import com.ecommerce.system.order.service.domain.ports.input.message.listener.sellerapproval.SellerApprovalResponseMessageListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -8,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 @Slf4j
 @Validated
 @Service
-public class SellerApprovalResponseMessageListenerImpl implements SellerApprovalResponseMessageListener{
+public class SellerApprovalResponseMessageListenerImpl implements SellerApprovalResponseMessageListener {
     @Override
     public void orderApproved(SellerApprovalResponse sellerApprovalResponse) {
 
