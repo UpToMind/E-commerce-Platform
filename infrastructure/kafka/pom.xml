@@ -15,6 +15,7 @@
         <module>kafka-producer</module>
         <module>kafka-consumer</module>
         <module>kafka-model</module>
+        <module>kafka-config-data</module>
     </modules>
 
     <properties>
