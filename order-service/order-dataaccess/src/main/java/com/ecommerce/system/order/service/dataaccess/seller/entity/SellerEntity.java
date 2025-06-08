@@ -6,6 +6,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -22,4 +23,19 @@ public class SellerEntity {
     private UUID sellerId;
     @Id
     private UUID productId;
+    private String sellerName;
+    private String productName;
+    private String productPrice;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        SellerEntity that = (SellerEntity) o;
+        return Objects.equals(sellerId, that.sellerId) && Objects.equals(productId, that.productId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sellerId, productId);
+    }
 }
