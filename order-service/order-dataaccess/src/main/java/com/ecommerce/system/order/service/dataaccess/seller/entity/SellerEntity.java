@@ -6,6 +6,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class SellerEntity {
     private UUID productId;
     private String sellerName;
     private String productName;
-    private String productPrice;
+    private BigDecimal productPrice;
 
     @Override
     public boolean equals(Object o) {
