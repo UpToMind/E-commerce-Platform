@@ -7,11 +7,8 @@ import com.ecommerce.system.order.service.domain.event.OrderCancelledEvent;
 import com.ecommerce.system.order.service.domain.ports.output.message.publisher.payment.OrderCancelledPaymentRequestMessagePublisher;
 import com.ecommerce.system.order.service.messaging.mapper.OrderMessagingDataMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
-import java.util.function.BiConsumer;
 
 @Slf4j
 @Component
@@ -20,13 +17,16 @@ public class CancelOrderKafkaMessagePublisher implements OrderCancelledPaymentRe
     private final OrderMessagingDataMapper orderMessagingDataMapper;
     private final OrderServiceConfigData orderServiceConfigData;
     private final KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer;
+    private final OrderKafkaMessageHelper orderKafkaMessageHelper;
 
     public CancelOrderKafkaMessagePublisher(OrderMessagingDataMapper orderMessagingDataMapper,
                                             OrderServiceConfigData orderServiceConfigData,
-                                            KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer) {
+                                            KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer,
+                                            OrderKafkaMessageHelper orderKafkaMessageHelper) {
         this.orderMessagingDataMapper = orderMessagingDataMapper;
         this.orderServiceConfigData = orderServiceConfigData;
         this.kafkaProducer = kafkaProducer;
+        this.orderKafkaMessageHelper = orderKafkaMessageHelper;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class CancelOrderKafkaMessagePublisher implements OrderCancelledPaymentRe
             kafkaProducer.send(orderServiceConfigData.getPaymentRequestTopicName(),
                     orderId,
                     paymentRequestAvroModel,
-                    getKafkaCallback(orderServiceConfigData.getPaymentResponseTopicName(), paymentRequestAvroModel));
+                    orderKafkaMessageHelper.getKafkaCallback(orderServiceConfigData.getPaymentResponseTopicName(), paymentRequestAvroModel));
 
             log.info("PaymentRequestAvroModel sent to Kafka for order id: {}", paymentRequestAvroModel.getOrderId());
         } catch (Exception e) {
@@ -50,24 +50,4 @@ public class CancelOrderKafkaMessagePublisher implements OrderCancelledPaymentRe
         }
     }
 
-    private BiConsumer<SendResult<String, PaymentRequestAvroModel>, Throwable> getKafkaCallback(
-            String paymentResponseTopicName,
-            PaymentRequestAvroModel paymentRequestAvroModel) {
-
-        return (result, ex) -> {
-            if (ex != null) {
-                log.error("Error while sending PaymentRequestAvroModel message {} to topic {}",
-                        paymentRequestAvroModel, paymentResponseTopicName, ex);
-            } else {
-                RecordMetadata metadata = result.getRecordMetadata();
-                log.info("Received successful response from Kafka for PaymentRequestAvroModel: {} " +
-                                "Topic: {} Partition: {} Offset: {} Timestamp: {}",
-                        paymentRequestAvroModel,
-                        metadata.topic(),
-                        metadata.partition(),
-                        metadata.offset(),
-                        metadata.timestamp());
-            }
-        };
-    }
 }
