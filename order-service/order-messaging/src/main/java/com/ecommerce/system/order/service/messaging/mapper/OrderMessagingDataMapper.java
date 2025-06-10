@@ -1,9 +1,7 @@
 package com.ecommerce.system.order.service.messaging.mapper;
 
-import com.ecommerce.system.kafka.order.avro.model.PaymentOrderStatus;
-import com.ecommerce.system.kafka.order.avro.model.PaymentRequestAvroModel;
-import com.ecommerce.system.kafka.order.avro.model.SellerApprovalRequestAvroModel;
-import com.ecommerce.system.kafka.order.avro.model.sellerOrderStatus;
+import com.ecommerce.system.kafka.order.avro.model.*;
+import com.ecommerce.system.order.service.domain.dto.message.PaymentResponse;
 import com.ecommerce.system.order.service.domain.entity.Order;
 import com.ecommerce.system.order.service.domain.event.OrderCancelledEvent;
 import com.ecommerce.system.order.service.domain.event.OrderCreatedEvent;
@@ -60,6 +58,22 @@ public class OrderMessagingDataMapper {
                 .setPrice(order.getPrice().getAmount())
                 .setCreatedAt(orderPaidEvent.getCreatedAt().toInstant())
                 .setSellerOrderStatus(sellerOrderStatus.PAID)
+                .build();
+    }
+
+    public PaymentResponse paymentResponseAvroModelToPaymentResponse(PaymentResponseAvroModel
+                                                                             paymentResponseAvroModel) {
+        return PaymentResponse.builder()
+                .id(paymentResponseAvroModel.getId())
+                .sagaId(paymentResponseAvroModel.getSagaId())
+                .paymentId(paymentResponseAvroModel.getPaymentId())
+                .userId(paymentResponseAvroModel.getUserId())
+                .orderId(paymentResponseAvroModel.getOrderId())
+                .price(paymentResponseAvroModel.getPrice())
+                .createdAt(paymentResponseAvroModel.getCreatedAt())
+                .paymentStatus(com.ecommerce.system.domain.valueobject.PaymentStatus.valueOf(
+                        paymentResponseAvroModel.getPaymentStatus().name()))
+                .failureMessages(paymentResponseAvroModel.getFailureMessages())
                 .build();
     }
 
