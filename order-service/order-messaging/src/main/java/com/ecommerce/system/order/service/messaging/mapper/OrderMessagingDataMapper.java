@@ -2,6 +2,7 @@ package com.ecommerce.system.order.service.messaging.mapper;
 
 import com.ecommerce.system.kafka.order.avro.model.*;
 import com.ecommerce.system.order.service.domain.dto.message.PaymentResponse;
+import com.ecommerce.system.order.service.domain.dto.message.SellerApprovalResponse;
 import com.ecommerce.system.order.service.domain.entity.Order;
 import com.ecommerce.system.order.service.domain.event.OrderCancelledEvent;
 import com.ecommerce.system.order.service.domain.event.OrderCreatedEvent;
@@ -74,6 +75,21 @@ public class OrderMessagingDataMapper {
                 .paymentStatus(com.ecommerce.system.domain.valueobject.PaymentStatus.valueOf(
                         paymentResponseAvroModel.getPaymentStatus().name()))
                 .failureMessages(paymentResponseAvroModel.getFailureMessages())
+                .build();
+    }
+
+    public SellerApprovalResponse
+    approvalResponseAvroModelToApprovalResponse(SellerApprovalResponseAvroModel
+                                                        sellerApprovalResponseAvroModel) {
+        return SellerApprovalResponse.builder()
+                .id(sellerApprovalResponseAvroModel.getId())
+                .sagaId(sellerApprovalResponseAvroModel.getSagaId())
+                .sellerId(sellerApprovalResponseAvroModel.getSellerId())
+                .orderId(sellerApprovalResponseAvroModel.getOrderId())
+                .createdAt(sellerApprovalResponseAvroModel.getCreatedAt())
+                .orderApprovalStatus(com.ecommerce.system.domain.valueobject.OrderApprovalStatus.valueOf(
+                        sellerApprovalResponseAvroModel.getOrderApprovalStatus().name()))
+                .failureMessages(sellerApprovalResponseAvroModel.getFailureMessages())
                 .build();
     }
 
