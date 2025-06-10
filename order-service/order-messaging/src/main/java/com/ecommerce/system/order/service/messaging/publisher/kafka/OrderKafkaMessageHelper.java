@@ -12,19 +12,21 @@ import java.util.function.BiConsumer;
 @Component
 public class OrderKafkaMessageHelper {
 
-    public BiConsumer<SendResult<String, PaymentRequestAvroModel>, Throwable> getKafkaCallback(
-            String paymentResponseTopicName,
-            PaymentRequestAvroModel paymentRequestAvroModel) {
+    public <T> BiConsumer<SendResult<String, T>, Throwable> getKafkaCallback(
+            String responseTopicName,
+            T requestAvroModel,
+            String orderId,
+            String requestAvroModelName) {
 
         return (result, ex) -> {
             if (ex != null) {
-                log.error("Error while sending PaymentRequestAvroModel message {} to topic {}",
-                        paymentRequestAvroModel, paymentResponseTopicName, ex);
+                log.error("Error while sending " + requestAvroModelName + "message {} to topic {}",
+                        requestAvroModel, responseTopicName, ex);
             } else {
                 RecordMetadata metadata = result.getRecordMetadata();
-                log.info("Received successful response from Kafka for PaymentRequestAvroModel: {} " +
+                log.info("Received successful response from Kafka for order id: {} " +
                                 "Topic: {} Partition: {} Offset: {} Timestamp: {}",
-                        paymentRequestAvroModel,
+                        orderId,
                         metadata.topic(),
                         metadata.partition(),
                         metadata.offset(),
