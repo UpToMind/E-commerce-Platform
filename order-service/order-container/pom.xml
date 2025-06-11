@@ -21,10 +21,6 @@
         </dependency>
         <dependency>
             <groupId>com.ecommerce.system</groupId>
-            <artifactId>order-messaging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.ecommerce.system</groupId>
             <artifactId>order-domain-core</artifactId>
         </dependency>
         <dependency>

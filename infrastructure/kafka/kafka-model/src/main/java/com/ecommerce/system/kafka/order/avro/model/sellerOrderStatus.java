@@ -9,5 +9,7 @@ public enum sellerOrderStatus implements org.apache.avro.generic.GenericEnumSymb
   PAID  ;
   public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"sellerOrderStatus\",\"namespace\":\"com.ecommerce.system.kafka.order.avro.model\",\"symbols\":[\"PAID\"]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
+
+  @Override
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
 }
