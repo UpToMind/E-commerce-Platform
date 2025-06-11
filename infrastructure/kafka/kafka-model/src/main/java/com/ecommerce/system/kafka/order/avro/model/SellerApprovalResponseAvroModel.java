@@ -22,14 +22,15 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
 
   private static final SpecificData MODEL$ = new SpecificData();
   static {
+    MODEL$.addLogicalTypeConversion(new org.apache.avro.Conversions.UUIDConversion());
     MODEL$.addLogicalTypeConversion(new org.apache.avro.data.TimeConversions.TimestampMillisConversion());
   }
 
   private static final BinaryMessageEncoder<SellerApprovalResponseAvroModel> ENCODER =
-      new BinaryMessageEncoder<SellerApprovalResponseAvroModel>(MODEL$, SCHEMA$);
+      new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
   private static final BinaryMessageDecoder<SellerApprovalResponseAvroModel> DECODER =
-      new BinaryMessageDecoder<SellerApprovalResponseAvroModel>(MODEL$, SCHEMA$);
+      new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageEncoder instance used by this class.
@@ -53,7 +54,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
   public static BinaryMessageDecoder<SellerApprovalResponseAvroModel> createDecoder(SchemaStore resolver) {
-    return new BinaryMessageDecoder<SellerApprovalResponseAvroModel>(MODEL$, SCHEMA$, resolver);
+    return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
   /**
@@ -76,10 +77,10 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
     return DECODER.decode(b);
   }
 
-  private java.lang.String id;
-  private java.lang.String sagaId;
-  private java.lang.String sellerId;
-  private java.lang.String orderId;
+  private java.util.UUID id;
+  private java.util.UUID sagaId;
+  private java.util.UUID sellerId;
+  private java.util.UUID orderId;
   private java.time.Instant createdAt;
   private com.ecommerce.system.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus;
   private java.util.List<java.lang.String> failureMessages;
@@ -101,7 +102,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * @param orderApprovalStatus The new value for orderApprovalStatus
    * @param failureMessages The new value for failureMessages
    */
-  public SellerApprovalResponseAvroModel(java.lang.String id, java.lang.String sagaId, java.lang.String sellerId, java.lang.String orderId, java.time.Instant createdAt, com.ecommerce.system.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus, java.util.List<java.lang.String> failureMessages) {
+  public SellerApprovalResponseAvroModel(java.util.UUID id, java.util.UUID sagaId, java.util.UUID sellerId, java.util.UUID orderId, java.time.Instant createdAt, com.ecommerce.system.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus, java.util.List<java.lang.String> failureMessages) {
     this.id = id;
     this.sagaId = sagaId;
     this.sellerId = sellerId;
@@ -111,9 +112,14 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
     this.failureMessages = failureMessages;
   }
 
+  @Override
   public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
+
+  @Override
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
+
   // Used by DatumWriter.  Applications should not call.
+  @Override
   public java.lang.Object get(int field$) {
     switch (field$) {
     case 0: return id;
@@ -129,10 +135,10 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
 
   private static final org.apache.avro.Conversion<?>[] conversions =
       new org.apache.avro.Conversion<?>[] {
-      null,
-      null,
-      null,
-      null,
+      new org.apache.avro.Conversions.UUIDConversion(),
+      new org.apache.avro.Conversions.UUIDConversion(),
+      new org.apache.avro.Conversions.UUIDConversion(),
+      new org.apache.avro.Conversions.UUIDConversion(),
       new org.apache.avro.data.TimeConversions.TimestampMillisConversion(),
       null,
       null,
@@ -145,13 +151,14 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
   }
 
   // Used by DatumReader.  Applications should not call.
+  @Override
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: id = value$ != null ? value$.toString() : null; break;
-    case 1: sagaId = value$ != null ? value$.toString() : null; break;
-    case 2: sellerId = value$ != null ? value$.toString() : null; break;
-    case 3: orderId = value$ != null ? value$.toString() : null; break;
+    case 0: id = (java.util.UUID)value$; break;
+    case 1: sagaId = (java.util.UUID)value$; break;
+    case 2: sellerId = (java.util.UUID)value$; break;
+    case 3: orderId = (java.util.UUID)value$; break;
     case 4: createdAt = (java.time.Instant)value$; break;
     case 5: orderApprovalStatus = (com.ecommerce.system.kafka.order.avro.model.OrderApprovalStatus)value$; break;
     case 6: failureMessages = (java.util.List<java.lang.String>)value$; break;
@@ -163,7 +170,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * Gets the value of the 'id' field.
    * @return The value of the 'id' field.
    */
-  public java.lang.String getId() {
+  public java.util.UUID getId() {
     return id;
   }
 
@@ -172,7 +179,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * Sets the value of the 'id' field.
    * @param value the value to set.
    */
-  public void setId(java.lang.String value) {
+  public void setId(java.util.UUID value) {
     this.id = value;
   }
 
@@ -180,7 +187,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * Gets the value of the 'sagaId' field.
    * @return The value of the 'sagaId' field.
    */
-  public java.lang.String getSagaId() {
+  public java.util.UUID getSagaId() {
     return sagaId;
   }
 
@@ -189,7 +196,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * Sets the value of the 'sagaId' field.
    * @param value the value to set.
    */
-  public void setSagaId(java.lang.String value) {
+  public void setSagaId(java.util.UUID value) {
     this.sagaId = value;
   }
 
@@ -197,7 +204,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * Gets the value of the 'sellerId' field.
    * @return The value of the 'sellerId' field.
    */
-  public java.lang.String getSellerId() {
+  public java.util.UUID getSellerId() {
     return sellerId;
   }
 
@@ -206,7 +213,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * Sets the value of the 'sellerId' field.
    * @param value the value to set.
    */
-  public void setSellerId(java.lang.String value) {
+  public void setSellerId(java.util.UUID value) {
     this.sellerId = value;
   }
 
@@ -214,7 +221,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * Gets the value of the 'orderId' field.
    * @return The value of the 'orderId' field.
    */
-  public java.lang.String getOrderId() {
+  public java.util.UUID getOrderId() {
     return orderId;
   }
 
@@ -223,7 +230,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
    * Sets the value of the 'orderId' field.
    * @param value the value to set.
    */
-  public void setOrderId(java.lang.String value) {
+  public void setOrderId(java.util.UUID value) {
     this.orderId = value;
   }
 
@@ -319,10 +326,10 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<SellerApprovalResponseAvroModel>
     implements org.apache.avro.data.RecordBuilder<SellerApprovalResponseAvroModel> {
 
-    private java.lang.String id;
-    private java.lang.String sagaId;
-    private java.lang.String sellerId;
-    private java.lang.String orderId;
+    private java.util.UUID id;
+    private java.util.UUID sagaId;
+    private java.util.UUID sellerId;
+    private java.util.UUID orderId;
     private java.time.Instant createdAt;
     private com.ecommerce.system.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus;
     private java.util.List<java.lang.String> failureMessages;
@@ -408,7 +415,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
       * Gets the value of the 'id' field.
       * @return The value.
       */
-    public java.lang.String getId() {
+    public java.util.UUID getId() {
       return id;
     }
 
@@ -418,7 +425,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
       * @param value The value of 'id'.
       * @return This builder.
       */
-    public com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel.Builder setId(java.lang.String value) {
+    public com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel.Builder setId(java.util.UUID value) {
       validate(fields()[0], value);
       this.id = value;
       fieldSetFlags()[0] = true;
@@ -448,7 +455,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
       * Gets the value of the 'sagaId' field.
       * @return The value.
       */
-    public java.lang.String getSagaId() {
+    public java.util.UUID getSagaId() {
       return sagaId;
     }
 
@@ -458,7 +465,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
       * @param value The value of 'sagaId'.
       * @return This builder.
       */
-    public com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel.Builder setSagaId(java.lang.String value) {
+    public com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel.Builder setSagaId(java.util.UUID value) {
       validate(fields()[1], value);
       this.sagaId = value;
       fieldSetFlags()[1] = true;
@@ -488,7 +495,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
       * Gets the value of the 'sellerId' field.
       * @return The value.
       */
-    public java.lang.String getSellerId() {
+    public java.util.UUID getSellerId() {
       return sellerId;
     }
 
@@ -498,7 +505,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
       * @param value The value of 'sellerId'.
       * @return This builder.
       */
-    public com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel.Builder setSellerId(java.lang.String value) {
+    public com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel.Builder setSellerId(java.util.UUID value) {
       validate(fields()[2], value);
       this.sellerId = value;
       fieldSetFlags()[2] = true;
@@ -528,7 +535,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
       * Gets the value of the 'orderId' field.
       * @return The value.
       */
-    public java.lang.String getOrderId() {
+    public java.util.UUID getOrderId() {
       return orderId;
     }
 
@@ -538,7 +545,7 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
       * @param value The value of 'orderId'.
       * @return This builder.
       */
-    public com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel.Builder setOrderId(java.lang.String value) {
+    public com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel.Builder setOrderId(java.util.UUID value) {
       validate(fields()[3], value);
       this.orderId = value;
       fieldSetFlags()[3] = true;
@@ -688,10 +695,10 @@ public class SellerApprovalResponseAvroModel extends org.apache.avro.specific.Sp
     public SellerApprovalResponseAvroModel build() {
       try {
         SellerApprovalResponseAvroModel record = new SellerApprovalResponseAvroModel();
-        record.id = fieldSetFlags()[0] ? this.id : (java.lang.String) defaultValue(fields()[0]);
-        record.sagaId = fieldSetFlags()[1] ? this.sagaId : (java.lang.String) defaultValue(fields()[1]);
-        record.sellerId = fieldSetFlags()[2] ? this.sellerId : (java.lang.String) defaultValue(fields()[2]);
-        record.orderId = fieldSetFlags()[3] ? this.orderId : (java.lang.String) defaultValue(fields()[3]);
+        record.id = fieldSetFlags()[0] ? this.id : (java.util.UUID) defaultValue(fields()[0]);
+        record.sagaId = fieldSetFlags()[1] ? this.sagaId : (java.util.UUID) defaultValue(fields()[1]);
+        record.sellerId = fieldSetFlags()[2] ? this.sellerId : (java.util.UUID) defaultValue(fields()[2]);
+        record.orderId = fieldSetFlags()[3] ? this.orderId : (java.util.UUID) defaultValue(fields()[3]);
         record.createdAt = fieldSetFlags()[4] ? this.createdAt : (java.time.Instant) defaultValue(fields()[4]);
         record.orderApprovalStatus = fieldSetFlags()[5] ? this.orderApprovalStatus : (com.ecommerce.system.kafka.order.avro.model.OrderApprovalStatus) defaultValue(fields()[5]);
         record.failureMessages = fieldSetFlags()[6] ? this.failureMessages : (java.util.List<java.lang.String>) defaultValue(fields()[6]);

@@ -17,10 +17,10 @@ public class OrderMessagingDataMapper {
     public PaymentRequestAvroModel orderCreatedEventToPaymentRequestAvroModel(OrderCreatedEvent orderCreatedEvent) {
         Order order = orderCreatedEvent.getOrder();
         return PaymentRequestAvroModel.newBuilder()
-                .setId(UUID.randomUUID().toString())
-                .setSagaId("")
-                .setUserId(order.getUserId().getValue().toString())
-                .setOrderId(order.getId().getValue().toString())
+                .setId(UUID.randomUUID())
+                .setSagaId(null)
+                .setUserId(order.getUserId().getValue())
+                .setOrderId(order.getId().getValue())
                 .setPrice(order.getPrice().getAmount())
                 .setCreatedAt(orderCreatedEvent.getCreatedAt().toInstant())
                 .setPaymentOrderStatus(PaymentOrderStatus.PENDING)
@@ -30,10 +30,10 @@ public class OrderMessagingDataMapper {
     public PaymentRequestAvroModel orderCancelledEventToPaymentRequestAvroModel(OrderCancelledEvent orderCancelledEvent) {
         Order order = orderCancelledEvent.getOrder();
         return PaymentRequestAvroModel.newBuilder()
-                .setId(UUID.randomUUID().toString())
-                .setSagaId("")
-                .setUserId(order.getUserId().getValue().toString())
-                .setOrderId(order.getId().getValue().toString())
+                .setId(UUID.randomUUID())
+                .setSagaId(null)
+                .setUserId(order.getUserId().getValue())
+                .setOrderId(order.getId().getValue())
                 .setPrice(order.getPrice().getAmount())
                 .setCreatedAt(orderCancelledEvent.getCreatedAt().toInstant())
                 .setPaymentOrderStatus(PaymentOrderStatus.CANCELLED)
@@ -44,13 +44,11 @@ public class OrderMessagingDataMapper {
     orderPaidEventToSellerApprovalRequestAvroModel(OrderPaidEvent orderPaidEvent) {
         Order order = orderPaidEvent.getOrder();
         return SellerApprovalRequestAvroModel.newBuilder()
-                .setId(UUID.randomUUID().toString())
-                .setSagaId("")
-                .setOrderId(order.getId().getValue().toString())
-                .setSellerId(order.getSellerId().getValue().toString())
-                .setOrderId(order.getId().getValue().toString())
-                .setSellerOrderStatus(com.ecommerce.system.kafka.order.avro.model.sellerOrderStatus
-                        .valueOf(order.getOrderStatus().name()))
+                .setId(UUID.randomUUID())
+                .setSagaId(null)
+                .setOrderId(order.getId().getValue())
+                .setSellerId(order.getSellerId().getValue())
+                .setSellerOrderStatus(com.ecommerce.system.kafka.order.avro.model.sellerOrderStatus.PAID)
                 .setProducts(order.getItems().stream().map(orderItem ->
                         com.ecommerce.system.kafka.order.avro.model.Product.newBuilder()
                                 .setId(orderItem.getProduct().getId().getValue().toString())
@@ -58,18 +56,17 @@ public class OrderMessagingDataMapper {
                                 .build()).collect(Collectors.toList()))
                 .setPrice(order.getPrice().getAmount())
                 .setCreatedAt(orderPaidEvent.getCreatedAt().toInstant())
-                .setSellerOrderStatus(sellerOrderStatus.PAID)
                 .build();
     }
 
     public PaymentResponse paymentResponseAvroModelToPaymentResponse(PaymentResponseAvroModel
                                                                              paymentResponseAvroModel) {
         return PaymentResponse.builder()
-                .id(paymentResponseAvroModel.getId())
-                .sagaId(paymentResponseAvroModel.getSagaId())
-                .paymentId(paymentResponseAvroModel.getPaymentId())
-                .userId(paymentResponseAvroModel.getUserId())
-                .orderId(paymentResponseAvroModel.getOrderId())
+                .id(paymentResponseAvroModel.getId().toString())
+                .sagaId(paymentResponseAvroModel.getSagaId().toString())
+                .paymentId(paymentResponseAvroModel.getPaymentId().toString())
+                .userId(paymentResponseAvroModel.getUserId().toString())
+                .orderId(paymentResponseAvroModel.getOrderId().toString())
                 .price(paymentResponseAvroModel.getPrice())
                 .createdAt(paymentResponseAvroModel.getCreatedAt())
                 .paymentStatus(com.ecommerce.system.domain.valueobject.PaymentStatus.valueOf(
@@ -82,10 +79,10 @@ public class OrderMessagingDataMapper {
     approvalResponseAvroModelToApprovalResponse(SellerApprovalResponseAvroModel
                                                         sellerApprovalResponseAvroModel) {
         return SellerApprovalResponse.builder()
-                .id(sellerApprovalResponseAvroModel.getId())
-                .sagaId(sellerApprovalResponseAvroModel.getSagaId())
-                .sellerId(sellerApprovalResponseAvroModel.getSellerId())
-                .orderId(sellerApprovalResponseAvroModel.getOrderId())
+                .id(sellerApprovalResponseAvroModel.getId().toString())
+                .sagaId(sellerApprovalResponseAvroModel.getSagaId().toString())
+                .sellerId(sellerApprovalResponseAvroModel.getSellerId().toString())
+                .orderId(sellerApprovalResponseAvroModel.getOrderId().toString())
                 .createdAt(sellerApprovalResponseAvroModel.getCreatedAt())
                 .orderApprovalStatus(com.ecommerce.system.domain.valueobject.OrderApprovalStatus.valueOf(
                         sellerApprovalResponseAvroModel.getOrderApprovalStatus().name()))
