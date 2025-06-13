@@ -19,11 +19,6 @@
             <groupId>com.ecommerce.system</groupId>
             <artifactId>common-domain</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
 </project>

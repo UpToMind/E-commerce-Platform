@@ -5,9 +5,11 @@ import com.ecommerce.system.order.service.dataaccess.order.repository.OrderJpaRe
 import com.ecommerce.system.order.service.domain.entity.Order;
 import com.ecommerce.system.order.service.domain.ports.output.repository.OrderRepository;
 import com.ecommerce.system.order.service.domain.valueobject.TrackingId;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public class OrderRepositoryImpl implements OrderRepository {
     private final OrderJpaRepository orderJpaRepository;
     private final OrderDataAccessMapper orderDataAccessMapper;

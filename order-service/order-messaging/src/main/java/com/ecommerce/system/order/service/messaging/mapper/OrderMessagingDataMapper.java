@@ -17,10 +17,10 @@ public class OrderMessagingDataMapper {
     public PaymentRequestAvroModel orderCreatedEventToPaymentRequestAvroModel(OrderCreatedEvent orderCreatedEvent) {
         Order order = orderCreatedEvent.getOrder();
         return PaymentRequestAvroModel.newBuilder()
-                .setId(UUID.randomUUID())
+                .setId(UUID.randomUUID().toString())
                 .setSagaId(null)
-                .setUserId(order.getUserId().getValue())
-                .setOrderId(order.getId().getValue())
+                .setUserId(order.getUserId().getValue().toString())
+                .setOrderId(order.getId().getValue().toString())
                 .setPrice(order.getPrice().getAmount())
                 .setCreatedAt(orderCreatedEvent.getCreatedAt().toInstant())
                 .setPaymentOrderStatus(PaymentOrderStatus.PENDING)
@@ -30,10 +30,10 @@ public class OrderMessagingDataMapper {
     public PaymentRequestAvroModel orderCancelledEventToPaymentRequestAvroModel(OrderCancelledEvent orderCancelledEvent) {
         Order order = orderCancelledEvent.getOrder();
         return PaymentRequestAvroModel.newBuilder()
-                .setId(UUID.randomUUID())
+                .setId(UUID.randomUUID().toString())
                 .setSagaId(null)
-                .setUserId(order.getUserId().getValue())
-                .setOrderId(order.getId().getValue())
+                .setUserId(order.getUserId().getValue().toString())
+                .setOrderId(order.getId().getValue().toString())
                 .setPrice(order.getPrice().getAmount())
                 .setCreatedAt(orderCancelledEvent.getCreatedAt().toInstant())
                 .setPaymentOrderStatus(PaymentOrderStatus.CANCELLED)
@@ -44,11 +44,11 @@ public class OrderMessagingDataMapper {
     orderPaidEventToSellerApprovalRequestAvroModel(OrderPaidEvent orderPaidEvent) {
         Order order = orderPaidEvent.getOrder();
         return SellerApprovalRequestAvroModel.newBuilder()
-                .setId(UUID.randomUUID())
+                .setId(UUID.randomUUID().toString())
                 .setSagaId(null)
-                .setOrderId(order.getId().getValue())
-                .setSellerId(order.getSellerId().getValue())
-                .setSellerOrderStatus(com.ecommerce.system.kafka.order.avro.model.sellerOrderStatus.PAID)
+                .setOrderId(order.getId().getValue().toString())
+                .setSellerId(order.getSellerId().getValue().toString())
+                .setSellerOrderStatus(SellerOrderStatus.PAID)
                 .setProducts(order.getItems().stream().map(orderItem ->
                         com.ecommerce.system.kafka.order.avro.model.Product.newBuilder()
                                 .setId(orderItem.getProduct().getId().getValue().toString())
