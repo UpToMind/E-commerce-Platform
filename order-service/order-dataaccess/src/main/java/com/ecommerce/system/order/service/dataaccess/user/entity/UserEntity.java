@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "order_user_m_view", schema = "user")
+@Table(name = "order_user_m_view", schema = "\"user\"")
 @Entity
 public class UserEntity {
     @Id
