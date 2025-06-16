@@ -5,14 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.ecommerce.system</groupId>
-        <artifactId>payment-service</artifactId>
+        <artifactId>payment-domain</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>payment-domain</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>payment-domain-core</module>
-    </modules>
+    <artifactId>payment-domain-core</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 </project>
