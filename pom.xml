@@ -14,6 +14,7 @@
         <module>infrastructure</module>
         <module>user-service</module>
         <module>payment-service</module>
+        <module>seller-service</module>
     </modules>
 
     <parent>
