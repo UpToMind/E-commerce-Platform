@@ -5,17 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.ecommerce.system</groupId>
-        <artifactId>e-commerce-system</artifactId>
+        <artifactId>seller-domain</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>seller-service</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>seller-container</module>
-        <module>seller-dataaccess</module>
-        <module>seller-domain</module>
-        <module>seller-messaging</module>
-    </modules>
+    <artifactId>seller-application-service</artifactId>
 
 </project>
