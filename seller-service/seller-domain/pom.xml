@@ -12,8 +12,8 @@
     <artifactId>seller-domain</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>seller-application-service</module>
         <module>seller-domain-core</module>
+        <module>seller-application-service</module>
     </modules>
 
 </project>
