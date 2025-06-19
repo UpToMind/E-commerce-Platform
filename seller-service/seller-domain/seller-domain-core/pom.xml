@@ -11,4 +11,11 @@
 
     <artifactId>seller-domain-core</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>common-domain</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>
