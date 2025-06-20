@@ -1,10 +1,10 @@
 package com.ecommerce.system.order.service.dataaccess.seller.mapper;
 
+import com.ecommerce.system.dataaccess.seller.entity.SellerEntity;
+import com.ecommerce.system.dataaccess.seller.exception.SellerDataAccessException;
 import com.ecommerce.system.domain.valueobject.Money;
 import com.ecommerce.system.domain.valueobject.ProductId;
 import com.ecommerce.system.domain.valueobject.SellerId;
-import com.ecommerce.system.order.service.dataaccess.seller.entity.SellerEntity;
-import com.ecommerce.system.order.service.dataaccess.seller.exception.SellerDataAccessException;
 import com.ecommerce.system.order.service.domain.entity.Product;
 import com.ecommerce.system.order.service.domain.entity.Seller;
 import org.springframework.stereotype.Component;

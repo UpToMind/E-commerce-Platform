@@ -1,4 +1,4 @@
-package com.ecommerce.system.order.service.dataaccess.seller.entity;
+package com.ecommerce.system.dataaccess.seller.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

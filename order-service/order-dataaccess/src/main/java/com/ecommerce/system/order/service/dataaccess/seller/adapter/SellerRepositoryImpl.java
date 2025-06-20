@@ -1,8 +1,8 @@
 package com.ecommerce.system.order.service.dataaccess.seller.adapter;
 
-import com.ecommerce.system.order.service.dataaccess.seller.entity.SellerEntity;
+import com.ecommerce.system.dataaccess.seller.entity.SellerEntity;
+import com.ecommerce.system.dataaccess.seller.repository.SellerJpaRepository;
 import com.ecommerce.system.order.service.dataaccess.seller.mapper.SellerDataAccessMapper;
-import com.ecommerce.system.order.service.dataaccess.seller.repository.SellerJpaRepository;
 import com.ecommerce.system.order.service.domain.entity.Seller;
 import com.ecommerce.system.order.service.domain.ports.output.repository.SellerRepository;
 import org.springframework.stereotype.Component;

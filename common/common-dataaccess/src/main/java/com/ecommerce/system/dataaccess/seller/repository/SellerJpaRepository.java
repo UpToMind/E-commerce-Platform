@@ -1,7 +1,7 @@
-package com.ecommerce.system.order.service.dataaccess.seller.repository;
+package com.ecommerce.system.dataaccess.seller.repository;
 
-import com.ecommerce.system.order.service.dataaccess.seller.entity.SellerEntity;
-import com.ecommerce.system.order.service.dataaccess.seller.entity.SellerEntityId;
+import com.ecommerce.system.dataaccess.seller.entity.SellerEntity;
+import com.ecommerce.system.dataaccess.seller.entity.SellerEntityId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
