@@ -27,6 +27,7 @@ public class SellerEntity {
     private String sellerName;
     private String productName;
     private BigDecimal productPrice;
+    private Boolean productAvailable;
 
     @Override
     public boolean equals(Object o) {
