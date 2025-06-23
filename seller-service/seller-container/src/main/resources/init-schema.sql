@@ -70,7 +70,6 @@ TABLESPACE pg_default
 AS
  SELECT r.id AS seller_id,
     r.name AS seller_name,
-    r.active AS seller_active,
     p.id AS product_id,
     p.name AS product_name,
     p.price AS product_price,
