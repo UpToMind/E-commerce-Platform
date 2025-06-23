@@ -11,4 +11,23 @@
 
     <artifactId>seller-messaging</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>seller-application-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>kafka-producer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>kafka-consumer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>kafka-model</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>
