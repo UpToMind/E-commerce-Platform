@@ -18,7 +18,7 @@ public class OrderMessagingDataMapper {
         Order order = orderCreatedEvent.getOrder();
         return PaymentRequestAvroModel.newBuilder()
                 .setId(UUID.randomUUID().toString())
-                .setSagaId(null)
+                .setSagaId(UUID.randomUUID().toString())
                 .setUserId(order.getUserId().getValue().toString())
                 .setOrderId(order.getId().getValue().toString())
                 .setPrice(order.getPrice().getAmount())
@@ -31,7 +31,7 @@ public class OrderMessagingDataMapper {
         Order order = orderCancelledEvent.getOrder();
         return PaymentRequestAvroModel.newBuilder()
                 .setId(UUID.randomUUID().toString())
-                .setSagaId(null)
+                .setSagaId(UUID.randomUUID().toString())
                 .setUserId(order.getUserId().getValue().toString())
                 .setOrderId(order.getId().getValue().toString())
                 .setPrice(order.getPrice().getAmount())
@@ -45,7 +45,7 @@ public class OrderMessagingDataMapper {
         Order order = orderPaidEvent.getOrder();
         return SellerApprovalRequestAvroModel.newBuilder()
                 .setId(UUID.randomUUID().toString())
-                .setSagaId(null)
+                .setSagaId(UUID.randomUUID().toString())
                 .setOrderId(order.getId().getValue().toString())
                 .setSellerId(order.getSellerId().getValue().toString())
                 .setSellerOrderStatus(SellerOrderStatus.PAID)

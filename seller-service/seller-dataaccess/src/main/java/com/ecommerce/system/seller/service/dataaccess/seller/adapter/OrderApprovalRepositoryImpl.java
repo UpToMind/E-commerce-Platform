@@ -4,9 +4,9 @@ import com.ecommerce.system.seller.service.dataaccess.seller.mapper.SellerDataAc
 import com.ecommerce.system.seller.service.dataaccess.seller.repository.OrderApprovalJpaRepository;
 import com.ecommerce.system.seller.service.domain.entity.OrderApproval;
 import com.ecommerce.system.seller.service.domain.ports.output.repository.OrderApprovalRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class OrderApprovalRepositoryImpl implements OrderApprovalRepository {
 
     private final OrderApprovalJpaRepository orderApprovalJpaRepository;

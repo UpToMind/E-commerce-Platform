@@ -5,11 +5,13 @@ import com.ecommerce.system.dataaccess.seller.repository.SellerJpaRepository;
 import com.ecommerce.system.seller.service.dataaccess.seller.mapper.SellerDataAccessMapper;
 import com.ecommerce.system.seller.service.domain.entity.Seller;
 import com.ecommerce.system.seller.service.domain.ports.output.repository.SellerRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public class SellerRepositoryImpl implements SellerRepository {
     private final SellerJpaRepository sellerJpaRepository;
     private final SellerDataAccessMapper sellerDataAccessMapper;
