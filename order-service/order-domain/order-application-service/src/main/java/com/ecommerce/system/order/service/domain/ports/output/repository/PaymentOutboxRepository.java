@@ -6,6 +6,7 @@ import com.ecommerce.system.saga.SagaStatus;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface PaymentOutboxRepository {
 
