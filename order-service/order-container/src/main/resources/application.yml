@@ -10,6 +10,8 @@ order-service:
   payment-response-topic-name: payment-response
   seller-approval-request-topic-name: seller-approval-request
   seller-approval-response-topic-name: seller-approval-response
+  outbox-scheduler-fixed-rate: 10000
+  outbox-scheduler-initial-delay: 10000
 
 spring:
   jpa:
