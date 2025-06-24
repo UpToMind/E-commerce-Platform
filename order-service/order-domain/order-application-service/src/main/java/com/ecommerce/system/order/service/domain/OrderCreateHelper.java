@@ -7,7 +7,6 @@ import com.ecommerce.system.order.service.domain.entity.User;
 import com.ecommerce.system.order.service.domain.event.OrderCreatedEvent;
 import com.ecommerce.system.order.service.domain.exception.OrderDomainException;
 import com.ecommerce.system.order.service.domain.mapper.OrderDataMapper;
-import com.ecommerce.system.order.service.domain.ports.output.message.publisher.payment.OrderCreatedPaymentRequestMessagePublisher;
 import com.ecommerce.system.order.service.domain.ports.output.repository.OrderRepository;
 import com.ecommerce.system.order.service.domain.ports.output.repository.SellerRepository;
 import com.ecommerce.system.order.service.domain.ports.output.repository.UserRepository;

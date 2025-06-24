@@ -1,17 +1,17 @@
 package com.ecommerce.system.order.service.messaging.publisher.kafka;
 
+import com.ecommerce.system.domain.event.publisher.DomainEventPublisher;
 import com.ecommerce.system.kafka.order.avro.model.PaymentRequestAvroModel;
 import com.ecommerce.system.kafka.producer.service.KafkaProducer;
 import com.ecommerce.system.order.service.domain.config.OrderServiceConfigData;
 import com.ecommerce.system.order.service.domain.event.OrderCreatedEvent;
-import com.ecommerce.system.order.service.domain.ports.output.message.publisher.payment.OrderCreatedPaymentRequestMessagePublisher;
 import com.ecommerce.system.order.service.messaging.mapper.OrderMessagingDataMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CreateOrderKafkaMessagePublisher implements OrderCreatedPaymentRequestMessagePublisher {
+public class CreateOrderKafkaMessagePublisher implements DomainEventPublisher<OrderCreatedEvent> {
     private final OrderMessagingDataMapper orderMessagingDataMapper;
     private final OrderServiceConfigData orderServiceConfigData;
     private final KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer;

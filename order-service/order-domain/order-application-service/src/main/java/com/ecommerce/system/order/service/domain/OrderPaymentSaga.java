@@ -6,7 +6,6 @@ import com.ecommerce.system.order.service.domain.dto.message.PaymentResponse;
 import com.ecommerce.system.order.service.domain.entity.Order;
 import com.ecommerce.system.order.service.domain.event.OrderPaidEvent;
 import com.ecommerce.system.order.service.domain.exception.OrderNotFoundException;
-import com.ecommerce.system.order.service.domain.ports.output.message.publisher.sellerapproval.OrderPaidSellerRequestMessagePublisher;
 import com.ecommerce.system.order.service.domain.ports.output.repository.OrderRepository;
 import com.ecommerce.system.saga.SagaStep;
 import lombok.extern.slf4j.Slf4j;

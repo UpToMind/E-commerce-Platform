@@ -1,10 +1,10 @@
 package com.ecommerce.system.order.service.messaging.publisher.kafka;
 
+import com.ecommerce.system.domain.event.publisher.DomainEventPublisher;
 import com.ecommerce.system.kafka.order.avro.model.PaymentRequestAvroModel;
 import com.ecommerce.system.kafka.producer.service.KafkaProducer;
 import com.ecommerce.system.order.service.domain.config.OrderServiceConfigData;
 import com.ecommerce.system.order.service.domain.event.OrderCancelledEvent;
-import com.ecommerce.system.order.service.domain.ports.output.message.publisher.payment.OrderCancelledPaymentRequestMessagePublisher;
 import com.ecommerce.system.order.service.messaging.mapper.OrderMessagingDataMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CancelOrderKafkaMessagePublisher implements OrderCancelledPaymentRequestMessagePublisher {
+public class CancelOrderKafkaMessagePublisher implements DomainEventPublisher<OrderCancelledEvent> {
 
     private final OrderMessagingDataMapper orderMessagingDataMapper;
     private final OrderServiceConfigData orderServiceConfigData;
