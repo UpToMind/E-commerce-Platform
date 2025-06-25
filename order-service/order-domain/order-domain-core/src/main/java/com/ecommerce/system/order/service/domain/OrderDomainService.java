@@ -10,13 +10,13 @@ import com.ecommerce.system.order.service.domain.event.OrderPaidEvent;
 import java.util.List;
 
 public interface OrderDomainService {
-    OrderCreatedEvent validateAndInitiateOrder(Order order, Seller seller, DomainEventPublisher<OrderCreatedEvent> orderCreatedEventDomainEventPublisher);
+    OrderCreatedEvent validateAndInitiateOrder(Order order, Seller seller);
 
-    OrderPaidEvent payOrder(Order order, DomainEventPublisher<OrderPaidEvent> orderPaidEventDomainEventPublisher);
+    OrderPaidEvent payOrder(Order order);
 
     void approveOrder(Order order);
 
-    OrderCancelledEvent cancelOrderPayment(Order order, List<String> failureMessages, DomainEventPublisher<OrderCancelledEvent> orderCancelledEventDomainEventPublisher);
+    OrderCancelledEvent cancelOrderPayment(Order order, List<String> failureMessages);
 
     void cancelOrder(Order order, List<String> failureMessages);
 }
