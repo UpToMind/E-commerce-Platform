@@ -1,6 +1,5 @@
 package com.ecommerce.system.order.service.domain;
 
-import com.ecommerce.system.domain.event.EmptyEvent;
 import com.ecommerce.system.domain.valueobject.OrderId;
 import com.ecommerce.system.domain.valueobject.OrderStatus;
 import com.ecommerce.system.domain.valueobject.PaymentStatus;
