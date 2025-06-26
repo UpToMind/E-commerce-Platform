@@ -9,6 +9,7 @@ import com.ecommerce.system.seller.service.domain.dto.SellerApprovalRequest;
 import com.ecommerce.system.seller.service.domain.entity.Product;
 import com.ecommerce.system.seller.service.domain.event.OrderApprovedEvent;
 import com.ecommerce.system.seller.service.domain.event.OrderRejectedEvent;
+import com.ecommerce.system.seller.service.domain.outbox.model.OrderEventPayload;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -16,33 +17,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class SellerMessagingDataMapper {
-    public SellerApprovalResponseAvroModel
-    orderApprovedEventToSellerApprovalResponseAvroModel(OrderApprovedEvent orderApprovedEvent) {
-        return SellerApprovalResponseAvroModel.newBuilder()
-                .setId(UUID.randomUUID().toString())
-                .setSagaId("")
-                .setOrderId(orderApprovedEvent.getOrderApproval().getOrderId().getValue().toString())
-                .setSellerId(orderApprovedEvent.getSellerId().getValue().toString())
-                .setCreatedAt(orderApprovedEvent.getCreatedAt().toInstant())
-                .setOrderApprovalStatus(OrderApprovalStatus.valueOf(orderApprovedEvent.
-                        getOrderApproval().getApprovalStatus().name()))
-                .setFailureMessages(orderApprovedEvent.getFailureMessages())
-                .build();
-    }
-
-    public SellerApprovalResponseAvroModel
-    orderRejectedEventToSellerApprovalResponseAvroModel(OrderRejectedEvent orderRejectedEvent) {
-        return SellerApprovalResponseAvroModel.newBuilder()
-                .setId(UUID.randomUUID().toString())
-                .setSagaId("")
-                .setOrderId(orderRejectedEvent.getOrderApproval().getOrderId().getValue().toString())
-                .setSellerId(orderRejectedEvent.getSellerId().getValue().toString())
-                .setCreatedAt(orderRejectedEvent.getCreatedAt().toInstant())
-                .setOrderApprovalStatus(OrderApprovalStatus.valueOf(orderRejectedEvent.
-                        getOrderApproval().getApprovalStatus().name()))
-                .setFailureMessages(orderRejectedEvent.getFailureMessages())
-                .build();
-    }
 
     public SellerApprovalRequest
     sellerApprovalRequestAvroModelToSellerApproval(SellerApprovalRequestAvroModel
@@ -63,6 +37,19 @@ public class SellerMessagingDataMapper {
                         .collect(Collectors.toList()))
                 .price(sellerApprovalRequestAvroModel.getPrice())
                 .createdAt(sellerApprovalRequestAvroModel.getCreatedAt())
+                .build();
+    }
+
+    public SellerApprovalResponseAvroModel
+    orderEventPayloadToSellerApprovalResponseAvroModel(String sagaId, OrderEventPayload orderEventPayload) {
+        return SellerApprovalResponseAvroModel.newBuilder()
+                .setId(UUID.randomUUID().toString())
+                .setSagaId(sagaId)
+                .setOrderId(orderEventPayload.getOrderId())
+                .setSellerId(orderEventPayload.getSellerId())
+                .setCreatedAt(orderEventPayload.getCreatedAt().toInstant())
+                .setOrderApprovalStatus(OrderApprovalStatus.valueOf(orderEventPayload.getOrderApprovalStatus()))
+                .setFailureMessages(orderEventPayload.getFailureMessages())
                 .build();
     }
 }
