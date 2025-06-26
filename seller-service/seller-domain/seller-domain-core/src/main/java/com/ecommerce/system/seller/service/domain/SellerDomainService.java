@@ -11,7 +11,5 @@ import java.util.List;
 public interface SellerDomainService {
 
     OrderApprovalEvent validateOrder(Seller seller,
-                                     List<String> failureMessages,
-                                     DomainEventPublisher<OrderApprovedEvent> orderApprovedEventDomainEventPublisher,
-                                     DomainEventPublisher<OrderRejectedEvent> orderRejectedEventDomainEventPublisher);
+                                     List<String> failureMessages);
 }

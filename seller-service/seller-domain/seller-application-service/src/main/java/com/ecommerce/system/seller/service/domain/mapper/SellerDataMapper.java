@@ -8,6 +8,8 @@ import com.ecommerce.system.seller.service.domain.dto.SellerApprovalRequest;
 import com.ecommerce.system.seller.service.domain.entity.OrderDetail;
 import com.ecommerce.system.seller.service.domain.entity.Product;
 import com.ecommerce.system.seller.service.domain.entity.Seller;
+import com.ecommerce.system.seller.service.domain.event.OrderApprovalEvent;
+import com.ecommerce.system.seller.service.domain.outbox.model.OrderEventPayload;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -30,6 +32,17 @@ public class SellerDataMapper {
                         .totalAmount(new Money(sellerApprovalRequest.getPrice()))
                         .orderStatus(OrderStatus.valueOf(sellerApprovalRequest.getSellerOrderStatus().name()))
                         .build())
+                .build();
+    }
+
+    public OrderEventPayload
+    orderApprovalEventToOrderEventPayload(OrderApprovalEvent orderApprovalEvent) {
+        return OrderEventPayload.builder()
+                .orderId(orderApprovalEvent.getOrderApproval().getOrderId().getValue().toString())
+                .sellerId(orderApprovalEvent.getSellerId().getValue().toString())
+                .orderApprovalStatus(orderApprovalEvent.getOrderApproval().getApprovalStatus().name())
+                .createdAt(orderApprovalEvent.getCreatedAt())
+                .failureMessages(orderApprovalEvent.getFailureMessages())
                 .build();
     }
 }

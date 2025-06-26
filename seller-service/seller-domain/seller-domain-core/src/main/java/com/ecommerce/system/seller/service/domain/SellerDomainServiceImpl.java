@@ -16,14 +16,10 @@ import java.util.List;
 import static com.ecommerce.system.domain.DomainConstants.UTC;
 
 @Slf4j
-public class SellerDomainServiceImpl implements SellerDomainService{
+public class SellerDomainServiceImpl implements SellerDomainService {
+
     @Override
-    public OrderApprovalEvent validateOrder(Seller seller,
-                                            List<String> failureMessages,
-                                            DomainEventPublisher<OrderApprovedEvent>
-                                                    orderApprovedEventDomainEventPublisher,
-                                            DomainEventPublisher<OrderRejectedEvent>
-                                                    orderRejectedEventDomainEventPublisher) {
+    public OrderApprovalEvent validateOrder(Seller seller, List<String> failureMessages) {
         seller.validateOrder(failureMessages);
         log.info("Validating order with id: {}", seller.getOrderDetail().getId().getValue());
 
@@ -33,16 +29,14 @@ public class SellerDomainServiceImpl implements SellerDomainService{
             return new OrderApprovedEvent(seller.getOrderApproval(),
                     seller.getId(),
                     failureMessages,
-                    ZonedDateTime.now(ZoneId.of(UTC)),
-                    orderApprovedEventDomainEventPublisher);
+                    ZonedDateTime.now(ZoneId.of(UTC)));
         } else {
             log.info("Order is rejected for order id: {}", seller.getOrderDetail().getId().getValue());
             seller.constructOrderApproval(OrderApprovalStatus.REJECTED);
             return new OrderRejectedEvent(seller.getOrderApproval(),
                     seller.getId(),
                     failureMessages,
-                    ZonedDateTime.now(ZoneId.of(UTC)),
-                    orderRejectedEventDomainEventPublisher);
+                    ZonedDateTime.now(ZoneId.of(UTC)));
         }
     }
 }

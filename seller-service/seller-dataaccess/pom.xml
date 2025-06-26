@@ -28,5 +28,17 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>outbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>saga</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>payment-application-service</artifactId>
+        </dependency>
     </dependencies>
 </project>

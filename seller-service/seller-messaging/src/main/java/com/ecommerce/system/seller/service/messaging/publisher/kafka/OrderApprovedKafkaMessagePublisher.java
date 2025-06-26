@@ -1,18 +1,18 @@
 package com.ecommerce.system.seller.service.messaging.publisher.kafka;
 
+import com.ecommerce.system.domain.event.publisher.DomainEventPublisher;
 import com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel;
 import com.ecommerce.system.kafka.producer.KafkaMessageHelper;
 import com.ecommerce.system.kafka.producer.service.KafkaProducer;
 import com.ecommerce.system.seller.service.domain.config.SellerServiceConfigData;
 import com.ecommerce.system.seller.service.domain.event.OrderApprovedEvent;
-import com.ecommerce.system.seller.service.domain.ports.output.message.publisher.OrderApprovedMessagePublisher;
 import com.ecommerce.system.seller.service.messaging.mapper.SellerMessagingDataMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class OrderApprovedKafkaMessagePublisher implements OrderApprovedMessagePublisher {
+public class OrderApprovedKafkaMessagePublisher implements DomainEventPublisher<OrderApprovedEvent> {
 
     private final SellerMessagingDataMapper sellerMessagingDataMapper;
     private final KafkaProducer<String, SellerApprovalResponseAvroModel> kafkaProducer;
