@@ -17,7 +17,7 @@ public class OrderEventPayload {
     private String paymentId;
 
     @JsonProperty
-    private String customerId;
+    private String userId;
 
     @JsonProperty
     private String orderId;

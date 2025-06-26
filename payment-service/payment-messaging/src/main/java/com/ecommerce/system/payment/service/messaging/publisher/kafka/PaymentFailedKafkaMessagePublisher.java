@@ -1,18 +1,18 @@
 package com.ecommerce.system.payment.service.messaging.publisher.kafka;
 
+import com.ecommerce.system.domain.event.publisher.DomainEventPublisher;
 import com.ecommerce.system.kafka.order.avro.model.PaymentResponseAvroModel;
 import com.ecommerce.system.kafka.producer.KafkaMessageHelper;
 import com.ecommerce.system.kafka.producer.service.KafkaProducer;
 import com.ecommerce.system.payment.service.domain.config.PaymentServiceConfigData;
 import com.ecommerce.system.payment.service.domain.event.PaymentFailedEvent;
-import com.ecommerce.system.payment.service.domain.ports.output.message.publisher.PaymentFailedMessagePublisher;
 import com.ecommerce.system.payment.service.messaging.mapper.PaymentMessagingDataMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class PaymentFailedKafkaMessagePublisher implements PaymentFailedMessagePublisher {
+public class PaymentFailedKafkaMessagePublisher implements DomainEventPublisher<PaymentFailedEvent> {
 
     private final PaymentMessagingDataMapper paymentMessagingDataMapper;
     private final KafkaProducer<String, PaymentResponseAvroModel> kafkaProducer;
