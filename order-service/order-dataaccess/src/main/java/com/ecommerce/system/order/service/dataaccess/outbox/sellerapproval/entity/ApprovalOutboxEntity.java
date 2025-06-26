@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "restaurant_approval_outbox")
+@Table(name = "seller_approval_outbox")
 @Entity
 public class ApprovalOutboxEntity {
 
