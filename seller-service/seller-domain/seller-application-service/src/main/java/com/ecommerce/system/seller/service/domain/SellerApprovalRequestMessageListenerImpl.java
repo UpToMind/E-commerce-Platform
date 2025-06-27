@@ -18,8 +18,6 @@ public class SellerApprovalRequestMessageListenerImpl implements SellerApprovalR
 
     @Override
     public void approveOrder(SellerApprovalRequest sellerApprovalRequest) {
-        OrderApprovalEvent orderApprovalEvent =
-                sellerApprovalRequestHelper.persistOrderApproval(sellerApprovalRequest);
-        orderApprovalEvent.fire();
+        sellerApprovalRequestHelper.persistOrderApproval(sellerApprovalRequest);
     }
 }

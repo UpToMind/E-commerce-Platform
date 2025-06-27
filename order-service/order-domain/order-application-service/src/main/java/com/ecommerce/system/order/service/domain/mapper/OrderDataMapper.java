@@ -1,9 +1,6 @@
 package com.ecommerce.system.order.service.domain.mapper;
 
-import com.ecommerce.system.domain.valueobject.Money;
-import com.ecommerce.system.domain.valueobject.ProductId;
-import com.ecommerce.system.domain.valueobject.SellerId;
-import com.ecommerce.system.domain.valueobject.UserId;
+import com.ecommerce.system.domain.valueobject.*;
 import com.ecommerce.system.order.service.domain.dto.create.CreateOrderCommand;
 import com.ecommerce.system.order.service.domain.dto.create.CreateOrderResponse;
 import com.ecommerce.system.order.service.domain.dto.track.TrackOrderResponse;
@@ -11,6 +8,12 @@ import com.ecommerce.system.order.service.domain.entity.Order;
 import com.ecommerce.system.order.service.domain.entity.OrderItem;
 import com.ecommerce.system.order.service.domain.entity.Product;
 import com.ecommerce.system.order.service.domain.entity.Seller;
+import com.ecommerce.system.order.service.domain.event.OrderCancelledEvent;
+import com.ecommerce.system.order.service.domain.event.OrderCreatedEvent;
+import com.ecommerce.system.order.service.domain.event.OrderPaidEvent;
+import com.ecommerce.system.order.service.domain.outbox.model.approval.OrderApprovalEventPayload;
+import com.ecommerce.system.order.service.domain.outbox.model.approval.OrderApprovalEventProduct;
+import com.ecommerce.system.order.service.domain.outbox.model.payment.OrderPaymentEventPayload;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -49,6 +52,42 @@ public class OrderDataMapper {
                 .orderTrackingId(order.getTrackingId().getValue())
                 .orderStatus(order.getOrderStatus())
                 .failureMessages(order.getFailureMessages())
+                .build();
+    }
+
+    public OrderPaymentEventPayload orderCreatedEventToOrderPaymentEventPayload(OrderCreatedEvent orderCreatedEvent) {
+        return OrderPaymentEventPayload.builder()
+                .userId(orderCreatedEvent.getOrder().getUserId().getValue().toString())
+                .orderId(orderCreatedEvent.getOrder().getId().getValue().toString())
+                .price(orderCreatedEvent.getOrder().getPrice().getAmount())
+                .createdAt(orderCreatedEvent.getCreatedAt())
+                .paymentOrderStatus(PaymentOrderStatus.PENDING.name())
+                .build();
+    }
+
+    public OrderPaymentEventPayload orderCancelledEventToOrderPaymentEventPayload(OrderCancelledEvent
+                                                                                          orderCancelledEvent) {
+        return OrderPaymentEventPayload.builder()
+                .userId(orderCancelledEvent.getOrder().getUserId().getValue().toString())
+                .orderId(orderCancelledEvent.getOrder().getId().getValue().toString())
+                .price(orderCancelledEvent.getOrder().getPrice().getAmount())
+                .createdAt(orderCancelledEvent.getCreatedAt())
+                .paymentOrderStatus(PaymentOrderStatus.CANCELLED.name())
+                .build();
+    }
+
+    public OrderApprovalEventPayload orderPaidEventToOrderApprovalEventPayload(OrderPaidEvent orderPaidEvent) {
+        return OrderApprovalEventPayload.builder()
+                .orderId(orderPaidEvent.getOrder().getId().getValue().toString())
+                .sellerId(orderPaidEvent.getOrder().getSellerId().getValue().toString())
+                .sellerOrderStatus(SellerOrderStatus.PAID.name())
+                .products(orderPaidEvent.getOrder().getItems().stream().map(orderItem ->
+                        OrderApprovalEventProduct.builder()
+                                .id(orderItem.getProduct().getId().getValue().toString())
+                                .quantity(orderItem.getQuantity())
+                                .build()).collect(Collectors.toList()))
+                .price(orderPaidEvent.getOrder().getPrice().getAmount())
+                .createdAt(orderPaidEvent.getCreatedAt())
                 .build();
     }
 

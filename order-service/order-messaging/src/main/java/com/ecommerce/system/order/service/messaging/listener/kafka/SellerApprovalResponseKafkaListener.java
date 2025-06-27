@@ -3,9 +3,11 @@ package com.ecommerce.system.order.service.messaging.listener.kafka;
 import com.ecommerce.system.kafka.consumer.KafkaConsumer;
 import com.ecommerce.system.kafka.order.avro.model.OrderApprovalStatus;
 import com.ecommerce.system.kafka.order.avro.model.SellerApprovalResponseAvroModel;
+import com.ecommerce.system.order.service.domain.exception.OrderNotFoundException;
 import com.ecommerce.system.order.service.domain.ports.input.message.listener.sellerapproval.SellerApprovalResponseMessageListener;
 import com.ecommerce.system.order.service.messaging.mapper.OrderMessagingDataMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -43,18 +45,27 @@ public class SellerApprovalResponseKafkaListener implements KafkaConsumer<Seller
                 offsets.toString());
 
         messages.forEach(sellerApprovalResponseAvroModel -> {
-            if (OrderApprovalStatus.APPROVED == sellerApprovalResponseAvroModel.getOrderApprovalStatus()) {
-                log.info("Processing approved order for order id: {}",
+            try {
+                if (OrderApprovalStatus.APPROVED == sellerApprovalResponseAvroModel.getOrderApprovalStatus()) {
+                    log.info("Processing approved order for order id: {}",
+                            sellerApprovalResponseAvroModel.getOrderId());
+                    sellerApprovalResponseMessageListener.orderApproved(orderMessagingDataMapper
+                            .approvalResponseAvroModelToApprovalResponse(sellerApprovalResponseAvroModel));
+                } else if (OrderApprovalStatus.REJECTED == sellerApprovalResponseAvroModel.getOrderApprovalStatus()) {
+                    log.info("Processing rejected order for order id: {}, with failure messages: {}",
+                            sellerApprovalResponseAvroModel.getOrderId(),
+                            String.join(FAILURE_MESSAGE_DELIMITER,
+                                    sellerApprovalResponseAvroModel.getFailureMessages()));
+                    sellerApprovalResponseMessageListener.orderRejected(orderMessagingDataMapper
+                            .approvalResponseAvroModelToApprovalResponse(sellerApprovalResponseAvroModel));
+                }
+            } catch (OptimisticLockingFailureException e) {
+                //NO-OP for optimistic lock. This means another thread finished the work, do not throw error to prevent reading the data from kafka again!
+                log.error("Caught optimistic locking exception in SellerApprovalResponseKafkaListener for order id: {}",
                         sellerApprovalResponseAvroModel.getOrderId());
-                sellerApprovalResponseMessageListener.orderApproved(orderMessagingDataMapper
-                        .approvalResponseAvroModelToApprovalResponse(sellerApprovalResponseAvroModel));
-            } else if (OrderApprovalStatus.REJECTED == sellerApprovalResponseAvroModel.getOrderApprovalStatus()) {
-                log.info("Processing rejected order for order id: {}, with failure messages: {}",
-                        sellerApprovalResponseAvroModel.getOrderId(),
-                        String.join(FAILURE_MESSAGE_DELIMITER,
-                                sellerApprovalResponseAvroModel.getFailureMessages()));
-                sellerApprovalResponseMessageListener.orderRejected(orderMessagingDataMapper
-                        .approvalResponseAvroModelToApprovalResponse(sellerApprovalResponseAvroModel));
+            } catch (OrderNotFoundException e) {
+                //NO-OP for OrderNotFoundException
+                log.error("No order found for order id: {}", sellerApprovalResponseAvroModel.getOrderId());
             }
         });
 

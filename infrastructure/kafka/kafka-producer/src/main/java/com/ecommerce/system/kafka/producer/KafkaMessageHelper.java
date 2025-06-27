@@ -1,6 +1,7 @@
 package com.ecommerce.system.kafka.producer;
 
 import com.ecommerce.system.order.service.domain.exception.OrderDomainException;
+import com.ecommerce.system.outbox.OutboxStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -10,27 +11,45 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.BiConsumer;
 
+
 @Slf4j
 @Component
 public class KafkaMessageHelper {
 
-    public <T> BiConsumer<SendResult<String, T>, Throwable>
-    getKafkaCallback(String responseTopicName, T avroModel, String orderId, String avroModelName) {
-        return (result, ex) -> {
-            if (ex != null) {
-                log.error("Error while sending {} message {} to topic {}",
-                        avroModelName, avroModel.toString(), responseTopicName, ex);
-            } else if (result != null && result.getRecordMetadata() != null) {
+    private final ObjectMapper objectMapper;
+
+    public KafkaMessageHelper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    public <T> T getOrderEventPayload(String payload, Class<T> outputType) {
+        try {
+            return objectMapper.readValue(payload, outputType);
+        } catch (JsonProcessingException e) {
+            log.error("Could not read {} object!", outputType.getName(), e);
+            throw new OrderDomainException("Could not read " + outputType.getName() + " object!", e);
+        }
+    }
+
+    public <T, U> BiConsumer<SendResult<String, T>, Throwable>
+    getKafkaCallback(String responseTopicName, T avroModel, U outboxMessage,
+                     BiConsumer<U, OutboxStatus> outboxCallback,
+                     String orderId, String avroModelName) {
+        return (result, throwable) -> {
+            if (throwable != null) {
+                log.error("Error while sending {} with message: {} and outbox type: {} to topic {}",
+                        avroModelName, avroModel.toString(), outboxMessage.getClass().getName(), responseTopicName, throwable);
+                outboxCallback.accept(outboxMessage, OutboxStatus.FAILED);
+            } else {
                 RecordMetadata metadata = result.getRecordMetadata();
-                log.info("Received successful response from Kafka for order id: {} " +
-                                "Topic: {} Partition: {} Offset: {} Timestamp: {}",
+                log.info("Received successful response from Kafka for order id: {}" +
+                                " Topic: {} Partition: {} Offset: {} Timestamp: {}",
                         orderId,
                         metadata.topic(),
                         metadata.partition(),
                         metadata.offset(),
                         metadata.timestamp());
-            } else {
-                log.warn("Kafka send succeeded but metadata is null for order id: {}", orderId);
+                outboxCallback.accept(outboxMessage, OutboxStatus.COMPLETED);
             }
         };
     }

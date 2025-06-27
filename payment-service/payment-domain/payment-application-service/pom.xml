@@ -15,6 +15,14 @@
     <dependencies>
         <dependency>
             <groupId>com.ecommerce.system</groupId>
+            <artifactId>outbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
+            <artifactId>saga</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ecommerce.system</groupId>
             <artifactId>payment-domain-core</artifactId>
         </dependency>
         <dependency>

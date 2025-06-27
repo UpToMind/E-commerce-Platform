@@ -27,10 +27,9 @@ public class SellerApprovalResponseMessageListenerImpl implements SellerApproval
 
     @Override
     public void orderRejected(SellerApprovalResponse sellerApprovalResponse) {
-        OrderCancelledEvent domainEvent = orderApprovalSaga.rollback(sellerApprovalResponse);
-        log.info("Publishing order cancelled event for order id: {} with failure messages: {}",
+        orderApprovalSaga.rollback(sellerApprovalResponse);
+        log.info("Order Approval Saga rollback operation is completed for order id: {} with failure messages: {}",
                 sellerApprovalResponse.getOrderId(),
                 String.join(FAILURE_MESSAGE_DELIMITER, sellerApprovalResponse.getFailureMessages()));
-        domainEvent.fire();
     }
 }

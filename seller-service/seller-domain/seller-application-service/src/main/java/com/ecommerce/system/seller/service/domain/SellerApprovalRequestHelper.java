@@ -1,13 +1,15 @@
 package com.ecommerce.system.seller.service.domain;
 
 import com.ecommerce.system.domain.valueobject.OrderId;
+import com.ecommerce.system.outbox.OutboxStatus;
 import com.ecommerce.system.seller.service.domain.dto.SellerApprovalRequest;
 import com.ecommerce.system.seller.service.domain.entity.Seller;
 import com.ecommerce.system.seller.service.domain.event.OrderApprovalEvent;
 import com.ecommerce.system.seller.service.domain.exception.SellerNotFoundException;
 import com.ecommerce.system.seller.service.domain.mapper.SellerDataMapper;
-import com.ecommerce.system.seller.service.domain.ports.output.message.publisher.OrderApprovedMessagePublisher;
-import com.ecommerce.system.seller.service.domain.ports.output.message.publisher.OrderRejectedMessagePublisher;
+import com.ecommerce.system.seller.service.domain.outbox.model.OrderOutboxMessage;
+import com.ecommerce.system.seller.service.domain.outbox.scheduler.OrderOutboxHelper;
+import com.ecommerce.system.seller.service.domain.ports.output.message.publisher.SellerApprovalResponseMessagePublisher;
 import com.ecommerce.system.seller.service.domain.ports.output.repository.OrderApprovalRepository;
 import com.ecommerce.system.seller.service.domain.ports.output.repository.SellerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -26,36 +28,49 @@ public class SellerApprovalRequestHelper {
     private final SellerDataMapper sellerDataMapper;
     private final SellerRepository sellerRepository;
     private final OrderApprovalRepository orderApprovalRepository;
-    private final OrderApprovedMessagePublisher orderApprovedMessagePublisher;
-    private final OrderRejectedMessagePublisher orderRejectedMessagePublisher;
+    private final OrderOutboxHelper orderOutboxHelper;
+    private final SellerApprovalResponseMessagePublisher sellerApprovalResponseMessagePublisher;
+
+
 
     public SellerApprovalRequestHelper(SellerDomainService sellerDomainService,
                                            SellerDataMapper sellerDataMapper,
                                            SellerRepository sellerRepository,
                                            OrderApprovalRepository orderApprovalRepository,
-                                           OrderApprovedMessagePublisher orderApprovedMessagePublisher,
-                                           OrderRejectedMessagePublisher orderRejectedMessagePublisher) {
+                                           OrderOutboxHelper orderOutboxHelper,
+                                           SellerApprovalResponseMessagePublisher
+                                                   sellerApprovalResponseMessagePublisher) {
         this.sellerDomainService = sellerDomainService;
         this.sellerDataMapper = sellerDataMapper;
         this.sellerRepository = sellerRepository;
         this.orderApprovalRepository = orderApprovalRepository;
-        this.orderApprovedMessagePublisher = orderApprovedMessagePublisher;
-        this.orderRejectedMessagePublisher = orderRejectedMessagePublisher;
+        this.orderOutboxHelper = orderOutboxHelper;
+        this.sellerApprovalResponseMessagePublisher = sellerApprovalResponseMessagePublisher;
     }
 
     @Transactional
-    public OrderApprovalEvent persistOrderApproval(SellerApprovalRequest sellerApprovalRequest) {
+    public void persistOrderApproval(SellerApprovalRequest sellerApprovalRequest) {
+        if (publishIfOutboxMessageProcessed(sellerApprovalRequest)) {
+            log.info("An outbox message with saga id: {} already saved to database!",
+                    sellerApprovalRequest.getSagaId());
+            return;
+        }
+
         log.info("Processing seller approval for order id: {}", sellerApprovalRequest.getOrderId());
         List<String> failureMessages = new ArrayList<>();
         Seller seller = findSeller(sellerApprovalRequest);
         OrderApprovalEvent orderApprovalEvent =
                 sellerDomainService.validateOrder(
                         seller,
-                        failureMessages,
-                        orderApprovedMessagePublisher,
-                        orderRejectedMessagePublisher);
+                        failureMessages);
         orderApprovalRepository.save(seller.getOrderApproval());
-        return orderApprovalEvent;
+
+        orderOutboxHelper
+                .saveOrderOutboxMessage(sellerDataMapper.orderApprovalEventToOrderEventPayload(orderApprovalEvent),
+                        orderApprovalEvent.getOrderApproval().getApprovalStatus(),
+                        OutboxStatus.STARTED,
+                        UUID.fromString(sellerApprovalRequest.getSagaId()));
+
     }
 
     private Seller findSeller(SellerApprovalRequest sellerApprovalRequest) {
@@ -78,5 +93,17 @@ public class SellerApprovalRequestHelper {
         seller.getOrderDetail().setId(new OrderId(UUID.fromString(sellerApprovalRequest.getOrderId())));
 
         return seller;
+    }
+
+    private boolean publishIfOutboxMessageProcessed(SellerApprovalRequest sellerApprovalRequest) {
+        Optional<OrderOutboxMessage> orderOutboxMessage =
+                orderOutboxHelper.getCompletedOrderOutboxMessageBySagaIdAndOutboxStatus(UUID
+                        .fromString(sellerApprovalRequest.getSagaId()), OutboxStatus.COMPLETED);
+        if (orderOutboxMessage.isPresent()) {
+            sellerApprovalResponseMessagePublisher.publish(orderOutboxMessage.get(),
+                    orderOutboxHelper::updateOutboxStatus);
+            return true;
+        }
+        return false;
     }
 }
