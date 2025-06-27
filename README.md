@@ -84,9 +84,6 @@ DDD(Domain-Driven Design), 이벤트 기반 아키텍처(EDA), SAGA 패턴, **Ou
 - **Value Objects**: 불변 객체를 통한 데이터 무결성
 - **Repository Pattern**: 데이터 접근 추상화
 
-## 이벤트 스토밍 결과
-<img width="1396" alt="image" src="https://github.com/user-attachments/assets/eb5cb9f3-3e63-48d3-9041-c5b4026c20ff" />
-
 ## 📝 기본 시나리오
 
 ### 🛒 주문 처리 플로우
