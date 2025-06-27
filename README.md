@@ -1,94 +1,319 @@
-# E-commerce-Platform
+# E-commerce System (전자상거래 시스템)
+
 마이크로서비스 아키텍처를 기반으로 한 전자상거래 플랫폼입니다.
-사용자, 주문, 결제, 재고와 같은 핵심 서비스를 구현하며, 
-DDD, 이벤트 기반 아키텍처(EDA), SAGA 패턴, Outbox 패턴 등을 적용하였습니다.
+DDD(Domain-Driven Design), 이벤트 기반 아키텍처(EDA), SAGA 패턴, **Outbox 패턴** 등 현대적인 분산 시스템 패턴을 적용하여 구현되었습니다.
 
-## 목차
-- [이벤트 스토밍](#이벤트-스토밍-결과)
+## 📋 목차
+- [시스템 아키텍처](#시스템-아키텍처)
+- [핵심 기능](#핵심-기능)
+- [마이크로서비스 구성](#마이크로서비스-구성)
+- [기술적 특징](#기술적-특징)
+- [이벤트 스토밍 결과](#이벤트-스토밍-결과)
 - [기본 시나리오](#기본-시나리오)
-- [이벤트 추출](#이벤트-추출)
-- [커맨드,액터,정책](#커맨드-액터-정책)
-- [설치 방법](#설치-방법)
+- [이벤트 플로우](#이벤트-플로우)
+- [도메인 모델](#도메인-모델)
+- [기술 스택](#기술-스택)
+- [설치 및 실행](#설치-및-실행)
 
-## 이벤트 스토밍 결과
-<img width="1396" alt="image" src="https://github.com/user-attachments/assets/eb5cb9f3-3e63-48d3-9041-c5b4026c20ff" />
+## 🏗️ 시스템 아키텍처
 
-## 기본 시나리오
-- 고객1이 회원서비스를 통해 회원 가입을 한다.
-- 고객1이 상품서비스를 통해 상품을 등록한다.(상품 이름, 상품 가격, 재고 수량)
-- 고객2가 회원서비스를 통해 회원 가입을 한다.
-- 고객2가 상품서비스에서 상품을 조회하고, 주문 서비스를 통해 구매를 요청한다.
-- 주문서비스가 제품서비스에 재고를 확인한다.
-- 재고가 있다면 결제서비스가 결제를 처리한다.
-- 결제가 성공하면 제품서비스가 재고량을 감소시킨다.
-- 결제 성공상태에서 주문을 취소한다면 제품서비스가 재고량을 증가시킨다.
-- 재고 부족 또는 결제 실패 시 사용자에게 에러 메시지를 반환한다.
+본 시스템은 **헥사고날 아키텍처(Hexagonal Architecture)**와 **DDD(Domain-Driven Design)**를 기반으로 설계되었으며, 각 서비스는 다음과 같은 계층으로 구성됩니다:
 
-## 이벤트 추출
-### 이벤트 목록 및 흐름
+```
+📦 Service Architecture
+├── 🎯 Domain Layer (Core Business Logic)
+│   ├── Domain Core (Entities, Value Objects, Domain Services)
+│   └── Application Service (Use Cases, Domain Events)
+├── 🔌 Infrastructure Layer
+│   ├── Data Access (JPA Repositories, Database)
+│   ├── Messaging (Kafka Producers/Consumers)
+│   └── Container (Spring Boot Configuration)
+└── 🌐 Application Layer (REST Controllers, DTOs)
+```
 
-| 이벤트 이름         | 발행 서비스      | 구독 서비스       | 설명                                                                 |
-|---------------------|------------------|------------------|----------------------------------------------------------------------|
-| `UserCreated`       | `UserService`    | `OrderService`   | 사용자가 등록될 때 발생. `OrderService`가 사용자 정보를 참조 가능.  |
-| `OrderCreated`      | `OrderService`   | `PaymentService` | 주문이 생성되면 발생. `PaymentService`가 결제를 시작.               |
-| `OrderCancelled`    | `OrderService`   | `PaymentService` | 주문이 취소되면 발생. `PaymentService`가 결제를 취소(`CancelPayment`). |
-| `OrderPaid`         | `OrderService`   | `ProductService` | 주문 결제가 완료되면 발생. `ProductService`가 재고를 감소(`DecreaseStock`). |
-| `PaymentCompleted`  | `PaymentService` | `OrderService`   | 결제가 성공적으로 완료되면 발생. `OrderService`가 주문 상태를 업데이트(`ChangeOrderStatus`). |
-| `PaymentCancelled`  | `PaymentService` | `OrderService`, `ProductService`   | 결제가 취소되면 발생. `OrderService`가 주문 상태를 업데이트(`ChangeOrderStatus`). `ProductService`가 재고 수량을 증가(`IncreaseStock`)|
-| `PaymentFailed`     | `PaymentService` | `OrderService`   | 결제가 실패하면 발생. `OrderService`가 주문 상태를 업데이트(`ChangeOrderStatus`). |
+## 🚀 핵심 기능
 
-## 커맨드, 액터, 정책
-### 커맨드 (Command)
+### ✨ 분산 시스템 패턴
+- **🔄 Outbox Pattern**: 트랜잭션 일관성과 메시지 전달 보장
+- **📋 SAGA Pattern**: 분산 트랜잭션 관리 및 보상 처리
+- **🎯 Event-Driven Architecture**: 비동기 이벤트 기반 통신
+- **🏛️ Domain-Driven Design**: 도메인 중심 설계
 
-| 커맨드 이름       | 서비스           | 설명                           |
-|-------------------|------------------|-------------------------------|
-| `RegisterUser`    | `UserService`    | 새로운 사용자를 등록.         |
-| `CreateOrder`     | `OrderService`   | 새로운 주문을 생성.           |
-| `CancelOrder`     | `OrderService`   | 기존 주문을 취소.             |
-| `ChangeOrderStatus` | `OrderService` | 주문 상태를 변경(예: 결제 완료, 취소). |
-| `ProcessPayment`  | `PaymentService` | 결제를 처리.                  |
-| `CancelPayment`   | `PaymentService` | 결제를 취소.                  |
-| `DecreaseStock`   | `ProductService` | 재고를 감소.                  |
-| `IncreaseStock`   | `ProductService` | 재고를 증가.                  |
+### 🛡️ 신뢰성 및 일관성
+- **원자성 보장**: 데이터베이스 트랜잭션과 메시지 발행의 원자성
+- **장애 복구**: 자동 재시도 및 보상 트랜잭션
+- **동시성 제어**: 낙관적 락킹을 통한 동시성 관리
+- **이벤트 순서 보장**: 메시지 순서 처리 및 중복 방지
 
-### 액터 (Actor)
+## 🔧 마이크로서비스 구성
 
-| 액터 이름 | 서비스           | 설명                           |
-|-----------|------------------|-------------------------------|
-| `User`    | `UserService`    | 시스템에 사용자를 등록.       |
-| `User`    | `OrderService`   | 주문을 생성하거나 취소.       |
+### 📊 서비스 개요
+| 서비스 | 역할 | 주요 기능 | 포트 |
+|--------|------|-----------|------|
+| **Order Service** | 주문 관리 | 주문 생성/취소, SAGA 오케스트레이션 | 8181 |
+| **Payment Service** | 결제 처리 | 결제 승인/취소, 결제 상태 관리 | 8182 |
+| **Seller Service** | 판매자 관리 | 상품 승인, 재고 관리 | 8183 |
+| **User Service** | 사용자 관리 | 회원 가입/관리, 인증 | 8184 |
 
-### 정책 (Policy)
+### 🏗️ 공통 인프라스트럭처
+```
+📦 Infrastructure
+├── 📤 Outbox (메시지 발행 보장)
+├── 🔄 SAGA (분산 트랜잭션 관리)  
+├── 📨 Kafka (메시지 브로커)
+├── 🗄️ Common Domain (공통 도메인 객체)
+└── 🐳 Docker Compose (컨테이너 오케스트레이션)
+```
 
-| 정책 이름         | 서비스           | 설명                           |
-|-------------------|------------------|-------------------------------|
-| `SaveUser`        | `OrderService`   | `UserCreated` 이벤트 발생 시 사용자 정보를 저장. |
-| `DecreaseStock`   | `ProductService` | `OrderPaid` 이벤트 발생 시 재고 감소.      |
-| `IncreaseStock`   | `ProductService` | `OrderCancelled` 이벤트 발생 시 재고 증가. |
-| `ChangeOrderStatus` | `OrderService` | `PaymentCompleted`, `PaymentCancelled`, `PaymentFailed` 이벤트 발생 시 주문 상태 변경. |
+## 🎯 기술적 특징
 
+### 🔄 Outbox Pattern 구현
+- **트랜잭션 보장**: 데이터베이스 변경과 메시지 발행의 원자성
+- **자동 재시도**: OutboxScheduler를 통한 실패 메시지 재처리
+- **상태 관리**: STARTED → COMPLETED → FAILED 상태 추적
+- **배치 처리**: 성능 최적화를 위한 배치 메시지 처리
 
-## Aggregate
-### 어그리게이트 (Aggregate)
+### 📋 SAGA Pattern 구현
+- **오케스트레이션**: Order Service가 전체 플로우 관리
+- **보상 트랜잭션**: 실패 시 자동 롤백 처리
+- **상태 추적**: 각 단계별 상태 관리 및 모니터링
 
-| 어그리게이트 이름 | 서비스           | 속성                          | 설명                           |
-|-------------------|------------------|-------------------------------|--------------------------------|
-| `User`            | `UserService`    | `userId`, `username`          | 사용자 정보를 관리. 사용자 등록 시 생성. |
-| `Order`           | `OrderService`   | `orderId`, `userId`, `orderPrice`, `orderStatus`, `failureMessages`, `items`, `trackingId` | 주문 정보를 관리. 주문 생성 및 상태 변경 시 사용. |
-| `Payment`         | `PaymentService` | `paymentId`, `orderId`, `userId`, `price`, `paymentStatus`, `createdAt` | 결제 정보를 관리. 결제 처리 및 상태 관리 시 사용. |
-| `Product`         | `ProductService` | `id`, `name`, `price`, `stock`, `createdAt`, `updatedAt` | 상품 정보를 관리. 재고 감소/증가 시 사용. |
+### 🏛️ DDD 적용
+- **Aggregate**: 일관성 경계 정의
+- **Domain Events**: 도메인 변경사항 전파
+- **Value Objects**: 불변 객체를 통한 데이터 무결성
+- **Repository Pattern**: 데이터 접근 추상화
 
-## 기술 스택
-- 언어/프레임워크: Java17+/Spring Boot
-- 빌드도구 : Maven
-- 데이터베이스: PostgreSQL
-- 메시지 브로커: Apache Kafka
-- 컨테이너화: Docker 및 Docker Compose
-- API 문서화: OpenAPI/Swagger
-- 테스트: JUnit4+
+## 📝 기본 시나리오
 
-## 설치 방법
+### 🛒 주문 처리 플로우
+1. **회원 가입**: 고객이 User Service를 통해 회원 가입
+2. **상품 등록**: 판매자가 Seller Service를 통해 상품 등록
+3. **주문 생성**: 고객이 Order Service를 통해 주문 생성
+4. **재고 확인**: Seller Service에서 재고 가용성 확인
+5. **결제 처리**: Payment Service에서 결제 승인 처리
+6. **재고 차감**: 결제 성공 시 Seller Service에서 재고 감소
+7. **주문 완료**: 모든 단계 성공 시 주문 상태를 완료로 변경
 
-## 실행 방법
+### 🔄 보상 트랜잭션 (실패 시)
+- **결제 실패**: 주문 취소 및 사용자 알림
+- **재고 부족**: 결제 취소 및 주문 취소
+- **주문 취소**: 결제 취소 및 재고 복원
+
+## 🔄 이벤트 플로우
+
+### 📨 이벤트 목록 및 흐름
+
+| 이벤트 이름 | 발행 서비스 | 구독 서비스 | 설명 |
+|-------------|-------------|-------------|------|
+| `UserCreated` | User Service | Order Service | 사용자 등록 완료 |
+| `OrderCreated` | Order Service | Payment Service, Seller Service | 주문 생성 완료 |
+| `OrderCancelled` | Order Service | Payment Service, Seller Service | 주문 취소 |
+| `PaymentCompleted` | Payment Service | Order Service | 결제 완료 |
+| `PaymentCancelled` | Payment Service | Order Service, Seller Service | 결제 취소 |
+| `PaymentFailed` | Payment Service | Order Service | 결제 실패 |
+| `OrderApproved` | Seller Service | Order Service | 주문 승인 완료 |
+| `OrderRejected` | Seller Service | Order Service, Payment Service | 주문 거부 |
+
+### 🎯 커맨드 및 정책
+
+#### 커맨드 (Command)
+| 커맨드 | 서비스 | 설명 |
+|--------|--------|------|
+| `CreateOrder` | Order Service | 새로운 주문 생성 |
+| `ProcessPayment` | Payment Service | 결제 처리 |
+| `ApproveOrder` | Seller Service | 주문 승인 및 재고 차감 |
+| `CancelOrder` | Order Service | 주문 취소 |
+
+#### 정책 (Policy)
+| 정책 | 서비스 | 트리거 이벤트 | 설명 |
+|------|--------|---------------|------|
+| `ProcessPaymentPolicy` | Payment Service | `OrderCreated` | 주문 생성 시 결제 처리 |
+| `ApproveOrderPolicy` | Seller Service | `PaymentCompleted` | 결제 완료 시 주문 승인 |
+| `CompleteOrderPolicy` | Order Service | `OrderApproved` | 승인 완료 시 주문 완료 |
+| `CancelPaymentPolicy` | Payment Service | `OrderCancelled` | 주문 취소 시 결제 취소 |
+
+## 🗄️ 도메인 모델
+
+### Aggregate 구성
+
+#### 📦 Order Aggregate
+```java
+Order {
+    - orderId: OrderId
+    - userId: UserId
+    - sellerId: SellerId
+    - orderStatus: OrderStatus
+    - price: Money
+    - items: List<OrderItem>
+    - trackingId: TrackingId
+    - failureMessages: List<String>
+}
+```
+
+#### 💳 Payment Aggregate
+```java
+Payment {
+    - paymentId: PaymentId
+    - orderId: OrderId
+    - userId: UserId
+    - price: Money
+    - paymentStatus: PaymentStatus
+    - createdAt: ZonedDateTime
+}
+```
+
+#### 🏪 Seller Aggregate
+```java
+Seller {
+    - sellerId: SellerId
+    - products: List<Product>
+    - orders: List<SellerOrder>
+    - sellerApproval: SellerApproval
+}
+```
+
+#### 👤 User Aggregate
+```java
+User {
+    - userId: UserId
+    - username: String
+    - email: String
+    - createdAt: ZonedDateTime
+}
+```
+
+## 🛠️ 기술 스택
+
+### 🔧 Backend
+- **언어**: Java 17
+- **프레임워크**: Spring Boot 3.4.5
+- **빌드 도구**: Maven
+- **아키텍처**: Hexagonal Architecture + DDD
+
+### 🗄️ Database & Messaging
+- **데이터베이스**: PostgreSQL
+- **메시지 브로커**: Apache Kafka
+- **스키마 레지스트리**: Confluent Schema Registry
+- **직렬화**: Apache Avro
+
+### 🏗️ Infrastructure
+- **컨테이너화**: Docker & Docker Compose
+- **모니터링**: Spring Boot Actuator
+- **테스트**: JUnit 5, Mockito
+- **문서화**: OpenAPI/Swagger
+
+### 📦 주요 의존성
+```xml
+<!-- Core Framework -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+<!-- Database -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+
+<!-- Messaging -->
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <artifactId>spring-kafka</artifactId>
+</dependency>
+
+<!-- Utilities -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+</dependency>
+```
+
+## 🚀 설치 및 실행
+
+### 📋 사전 요구사항
+- **Java 17+**
+- **Maven 3.6+**
+- **Docker & Docker Compose**
+- **Git**
+
+### 🔧 로컬 개발 환경 설정
+
+#### 1️⃣ 프로젝트 클론
+```bash
+git clone https://github.com/your-username/e-commerce-system.git
+cd e-commerce-system
+```
+
+#### 2️⃣ 인프라스트럭처 실행
+```bash
+# Kafka, Zookeeper, PostgreSQL 실행
+cd infrastructure/docker-compose
+docker-compose -f common.yml -f zookeeper.yml -f kafka_cluster.yml up -d
+
+# Kafka 토픽 초기화
+docker-compose -f init_kafka.yml up
+```
+
+#### 3️⃣ 애플리케이션 빌드
+```bash
+# 루트 디렉토리에서 전체 빌드
+mvn clean compile
+```
+
+#### 4️⃣ 서비스 실행
+```bash
+# 각 서비스를 별도 터미널에서 실행
+# Order Service
+cd order-service/order-container
+mvn spring-boot:run
+
+# Payment Service  
+cd payment-service/payment-container
+mvn spring-boot:run
+
+# Seller Service
+cd seller-service/seller-container
+mvn spring-boot:run
+
+# User Service
+cd user-service/user-container
+mvn spring-boot:run
+```
+
+### 🐳 Docker로 전체 실행
+```bash
+# 전체 시스템을 Docker Compose로 실행
+docker-compose up -d
+```
+
+### 🧪 테스트 실행
+```bash
+# 전체 테스트 실행
+mvn test
+
+# 특정 서비스 테스트
+cd order-service
+mvn test
+```
+
+### 🔍 모니터링
+- **Kafka UI**: http://localhost:9021 (Confluent Control Center)
+- **PostgreSQL**: localhost:5432 (사용자: postgres, 비밀번호: admin)
+- **Application Health**: http://localhost:818X/actuator/health
+
+## 📈 향후 개발 계획
+- [ ] **API Gateway** 통합
+- [ ] **Service Mesh** (Istio) 적용
+- [ ] **분산 추적** (Jaeger) 구현
+- [ ] **메트릭 수집** (Prometheus/Grafana)
+- [ ] **Event Sourcing** 구현
+
+## 📄 라이선스
+이 프로젝트는 MIT 라이선스 하에 있습니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조해주세요.
+
+---
+
 
 
