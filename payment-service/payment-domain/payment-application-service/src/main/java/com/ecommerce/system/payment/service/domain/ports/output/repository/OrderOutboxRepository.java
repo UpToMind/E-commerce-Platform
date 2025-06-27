@@ -9,9 +9,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderOutboxRepository {
-    Optional<List<OrderOutboxEntity>> findByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus);
+    OrderOutboxMessage save(OrderOutboxMessage orderOutboxMessage);
 
-    Optional<OrderOutboxEntity> findByTypeAndSagaIdAndOutboxStatus(String type, UUID sagaId, OutboxStatus outboxStatus);
+    Optional<List<OrderOutboxMessage>> findByTypeAndOutboxStatus(String type, OutboxStatus status);
 
-    void deleteByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus);
+    Optional<OrderOutboxMessage> findByTypeAndSagaIdAndPaymentStatusAndOutboxStatus(String type,
+                                                                                    UUID sagaId,
+                                                                                    PaymentStatus paymentStatus,
+                                                                                    OutboxStatus outboxStatus);
+    void deleteByTypeAndOutboxStatus(String type, OutboxStatus status);
 }
